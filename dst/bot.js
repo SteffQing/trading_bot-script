@@ -76,10 +76,10 @@ function instaniate_routes(amount) {
         throw new Error("Error generating routes");
     }
 }
-function generate_trade_routes() {
+function execute_trade() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { allRoutes, amountIn, inputToken, outputToken, isExactIn, isNativeIn, isNativeOut, } = instaniate_routes("0.2");
+            const { allRoutes, amountIn, inputToken, outputToken, isExactIn, isNativeIn, isNativeOut, } = instaniate_routes("0.02");
             // generates all possible TradeV2 instances
             const trades = yield sdk_v2_1.TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, isNativeIn, isNativeOut, publicClient, CHAIN_ID);
             // Filter out undefined trades
@@ -91,7 +91,7 @@ function generate_trade_routes() {
             }
             /* Step 7 */
             // print useful information about the trade, such as the quote, executionPrice, fees, etc
-            console.log("bestTrade", bestTrade.toLog());
+            // console.log("bestTrade", bestTrade.toLog());
             // get trade fee information
             const { totalFeePct, feeAmountIn } = yield bestTrade.getTradeFee();
             console.log("Total fees percentage", totalFeePct.toSignificant(6), "%");
@@ -125,18 +125,21 @@ function generate_trade_routes() {
         }
         catch (error) {
             console.log(error);
-            throw new Error("Error routing trade");
+            throw new Error("Error executing trade");
         }
     });
 }
+const INTERVAL = 1000 * 10;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield generate_trade_routes();
+            setInterval(() => __awaiter(this, void 0, void 0, function* () {
+                yield execute_trade();
+            }), INTERVAL);
         }
         catch (error) {
             console.log(error);
-            throw new Error("Error executing trade");
+            throw new Error("Error running script");
         }
     });
 }

@@ -121,7 +121,7 @@ function instaniate_routes(amount: string) {
   }
 }
 
-async function generate_trade_routes() {
+async function execute_trade() {
   try {
     const {
       allRoutes,
@@ -131,7 +131,7 @@ async function generate_trade_routes() {
       isExactIn,
       isNativeIn,
       isNativeOut,
-    } = instaniate_routes("0.2");
+    } = instaniate_routes("0.02");
 
     // generates all possible TradeV2 instances
     const trades = await TradeV2.getTradesExactIn(
@@ -160,7 +160,7 @@ async function generate_trade_routes() {
 
     /* Step 7 */
     // print useful information about the trade, such as the quote, executionPrice, fees, etc
-    console.log("bestTrade", bestTrade.toLog());
+    // console.log("bestTrade", bestTrade.toLog());
 
     // get trade fee information
     const { totalFeePct, feeAmountIn } = await bestTrade.getTradeFee();
@@ -201,16 +201,18 @@ async function generate_trade_routes() {
     console.log(`Transaction sent with hash ${hash}`);
   } catch (error) {
     console.log(error);
-    throw new Error("Error routing trade");
+    throw new Error("Error executing trade");
   }
 }
-
+const INTERVAL = 1000 * 10;
 async function main() {
   try {
-    await generate_trade_routes();
+    setInterval(async () => {
+      await execute_trade();
+    }, INTERVAL);
   } catch (error) {
     console.log(error);
-    throw new Error("Error executing trade");
+    throw new Error("Error running script");
   }
 }
 
