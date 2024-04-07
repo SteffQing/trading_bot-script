@@ -11,7 +11,7 @@ interface BotInterface {
 async function run(params: BotInterface) {
   try {
     const { loop, min, max } = params;
-    validateInputs(params);
+    // validateInputs(params);
     // token initializations
     const USDC = BASES[1];
 
@@ -27,6 +27,8 @@ async function run(params: BotInterface) {
       }
       // Generate new key and client, fund and add to array
       let privateKey = gen_key();
+      console.log(privateKey);
+
       const client = createClient(privateKey);
       let address = client.account.address;
       await fund_account({
@@ -64,8 +66,9 @@ async function run(params: BotInterface) {
         let txnHash = await trade(currentClient, route);
       }
     }
-  } catch (error) {
-    throw new Error("Error");
+  } catch (err) {
+    console.log(err);
+    throw new Error("run Error");
   }
 }
 
@@ -86,11 +89,11 @@ function validateInputs(params: BotInterface) {
   }
 
   // Validate min/max are positive integers
-  if (!Number.isInteger(min) || min <= 0) {
+  if (!Number.isInteger(min) || min < 0) {
     throw new Error("min must be a non-negative integer");
   }
-  if (!Number.isInteger(max) || max <= min) {
-    throw new Error("max must be greater than or equal to min");
+  if (!Number.isInteger(max) || max < min) {
+    throw new Error("max must be greater than min");
   }
 }
 
@@ -108,6 +111,6 @@ function getRandomNumber(min: number, max: number) {
 }
 
 run({ loop: 3, min: 0.01, max: 0.1 }).catch((error) => {
-  console.error(error);
+  console.error("main error", error);
   process.exit(1);
 });

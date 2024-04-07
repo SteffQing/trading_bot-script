@@ -22,7 +22,6 @@ async function fund_account(params: AccountFunding) {
   try {
     // Fund with ETH
     const hash1 = await mainWalletClient.sendTransaction({
-      account: account.address,
       to: recipientAddress,
       value: parseEther(amount),
     });
@@ -61,7 +60,7 @@ async function defund_account(
     });
     // Defund ETH
     const hash1 = await defundClient.sendTransaction({
-      account: defundAddress,
+      account: defundAccount,
       to: account.address,
       value: ETH_Balance,
       chain: CHAIN_ID as any,
