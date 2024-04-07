@@ -12,10 +12,10 @@ interface AccountFunding {
   tokenAddress: `0x${string}`;
   decimals: number;
   amount: string;
-  address: `0x${string}`;
+  recipientAddress: `0x${string}`;
 }
 async function fund_account(params: AccountFunding) {
-  const { tokenAddress, decimals, amount, address } = params;
+  const { tokenAddress, decimals, amount, recipientAddress } = params;
   // TODO
   // : Implement funding account logic based on current gas prices
 
@@ -23,15 +23,15 @@ async function fund_account(params: AccountFunding) {
     // Fund with ETH
     const hash1 = await mainWalletClient.sendTransaction({
       account: account.address,
-      to: address,
-      value: parseEther("0.1"),
+      to: recipientAddress,
+      value: parseEther(amount),
     });
     // Fund with ERC20 token
     const { request } = await publicClient.simulateContract({
       address: tokenAddress,
       abi: ERC20ABI,
       functionName: "transfer",
-      args: [address, parseUnits(amount, decimals)],
+      args: [recipientAddress, parseUnits(amount, decimals)],
       account,
     });
     const hash2 = await mainWalletClient.writeContract(request);

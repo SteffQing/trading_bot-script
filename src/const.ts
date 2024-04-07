@@ -43,4 +43,21 @@ const mainWalletClient = createWalletClient({
   transport: http(),
 });
 
-export { BASES, TOKENS, publicClient, mainWalletClient, CHAIN_ID, account };
+function createClient(privateKey: string) {
+  const newAccount = privateKeyToAccount(`0x${privateKey}`);
+  return createWalletClient({
+    account: newAccount,
+    chain: avalancheFuji,
+    transport: http(),
+  });
+}
+
+export {
+  BASES,
+  TOKENS,
+  publicClient,
+  mainWalletClient,
+  CHAIN_ID,
+  account,
+  createClient,
+};

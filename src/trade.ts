@@ -19,10 +19,13 @@ interface GetRouteParams {
   amount: string; // e.g. "20", "0.1"
   inputToken: Token;
   outputToken: Token;
+  isNativeIn: boolean;
+  isNativeOut: boolean;
 }
 function getRoute(routeParams: GetRouteParams) {
   try {
-    const { amount, inputToken, outputToken } = routeParams;
+    const { amount, inputToken, outputToken, isNativeIn, isNativeOut } =
+      routeParams;
 
     // specify whether user gave an exact inputToken or outputToken value for the trade
     const isExactIn = true;
@@ -52,8 +55,8 @@ function getRoute(routeParams: GetRouteParams) {
     );
 
     /* Step 6 */ // Would probably want to pass this in as a variable instead of hardcoding
-    const isNativeIn = true; // set to 'true' if swapping from Native; otherwise, 'false'
-    const isNativeOut = false; // set to 'true' if swapping to Native; otherwise, 'false'
+    // const isNativeIn = true; // set to 'true' if swapping from Native; otherwise, 'false'
+    // const isNativeOut = false; // set to 'true' if swapping to Native; otherwise, 'false'
 
     return {
       allRoutes,
@@ -76,12 +79,9 @@ interface Route {
   isNativeIn: boolean;
   isNativeOut: boolean;
 }
-async function trade(
-  account: Account,
-  walletClient: WalletClient,
-  route: Route
-) {
+async function trade(walletClient: WalletClient, route: Route) {
   try {
+    const account = walletClient.account!;
     const {
       allRoutes,
       amountIn,
@@ -157,6 +157,7 @@ async function trade(
     });
     const hash = await walletClient.writeContract(request);
     console.log(`Transaction sent with hash ${hash}`);
+    return hash;
   } catch (error) {
     console.log(error);
     throw new Error("Error executing trade");
