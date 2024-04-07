@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "exec": "npx tsc && node dst/bot.js"
+    "start": "npx tsc && node dst/index.js",
+    "test": "npx tsc && node dst/test.js",
+    "prettier": "prettier --write '**/*.{js,ts,json,md}'"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +15,10 @@
     "@traderjoe-xyz/sdk": "^5.0.1",
     "@traderjoe-xyz/sdk-core": "^2.0.1",
     "@traderjoe-xyz/sdk-v2": "^3.0.5",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "prettier": "^3.2.5",
     "viem": "^2.9.9"
   },
   "devDependencies": {

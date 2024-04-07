@@ -1,10 +1,4 @@
-import {
-  ChainId,
-  WNATIVE,
-  Token,
-  TokenAmount,
-  Percent,
-} from "@traderjoe-xyz/sdk-core";
+import { TokenAmount, Percent, Token } from "@traderjoe-xyz/sdk-core";
 import {
   PairV2,
   RouteV2,
@@ -13,73 +7,28 @@ import {
   LB_ROUTER_V21_ADDRESS,
   jsonAbis,
 } from "@traderjoe-xyz/sdk-v2";
-import {
-  createPublicClient,
-  createWalletClient,
-  http,
-  parseUnits,
-  BaseError,
-  ContractFunctionRevertedError,
-} from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { avalancheFuji } from "viem/chains";
+import { Account, WalletClient, parseUnits } from "viem";
 import { config } from "dotenv";
+import { publicClient, BASES, CHAIN_ID } from "./const";
 
 config();
-const privateKey = process.env.PRIVATE_KEY;
 const { LBRouterV21ABI } = jsonAbis;
-const CHAIN_ID = ChainId.FUJI;
 const router = LB_ROUTER_V21_ADDRESS[CHAIN_ID];
-const account = privateKeyToAccount(`0x${privateKey}`);
 
-// initialize tokens
-const WAVAX = WNATIVE[CHAIN_ID]; // Token instance of WAVAX
-const USDC = new Token(
-  CHAIN_ID,
-  "0xB6076C93701D6a07266c31066B298AeC6dd65c2d",
-  6,
-  "USDC",
-  "USD Coin"
-);
-const USDT = new Token(
-  CHAIN_ID,
-  "0xAb231A5744C8E6c45481754928cCfFFFD4aa0732",
-  6,
-  "USDT",
-  "Tether USD"
-);
-
-/* Step 4 */
-// declare bases used to generate trade routes
-const BASES = [WAVAX, USDC, USDT];
-
-const publicClient = createPublicClient({
-  chain: avalancheFuji,
-  transport: http(),
-});
-
-const walletClient = createWalletClient({
-  account,
-  chain: avalancheFuji,
-  transport: http(),
-});
-
-function instaniate_routes(amount: string) {
+interface GetRouteParams {
+  amount: string; // e.g. "20", "0.1"
+  inputToken: Token;
+  outputToken: Token;
+}
+function getRoute(routeParams: GetRouteParams) {
   try {
-    // the input token in the trade
-    const inputToken = WAVAX;
-
-    // the output token in the trade
-    const outputToken = USDC;
+    const { amount, inputToken, outputToken } = routeParams;
 
     // specify whether user gave an exact inputToken or outputToken value for the trade
     const isExactIn = true;
 
-    // user string input; in this case representing 20 USDC
-    const typedValueIn = amount;
-
     // parse user input into inputToken's decimal precision, which is 6 for USDC
-    const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals);
+    const typedValueInParsed = parseUnits(amount, inputToken.decimals);
 
     // wrap into TokenAmount
     const amountIn = new TokenAmount(inputToken, typedValueInParsed);
@@ -102,14 +51,13 @@ function instaniate_routes(amount: string) {
       outputToken
     );
 
-    /* Step 6 */
+    /* Step 6 */ // Would probably want to pass this in as a variable instead of hardcoding
     const isNativeIn = true; // set to 'true' if swapping from Native; otherwise, 'false'
     const isNativeOut = false; // set to 'true' if swapping to Native; otherwise, 'false'
 
     return {
       allRoutes,
       amountIn,
-      inputToken,
       outputToken,
       isExactIn,
       isNativeIn,
@@ -120,18 +68,28 @@ function instaniate_routes(amount: string) {
     throw new Error("Error generating routes");
   }
 }
-
-async function execute_trade() {
+interface Route {
+  allRoutes: RouteV2[];
+  amountIn: TokenAmount;
+  outputToken: Token;
+  isExactIn: boolean;
+  isNativeIn: boolean;
+  isNativeOut: boolean;
+}
+async function trade(
+  account: Account,
+  walletClient: WalletClient,
+  route: Route
+) {
   try {
     const {
       allRoutes,
       amountIn,
-      inputToken,
       outputToken,
       isExactIn,
       isNativeIn,
       isNativeOut,
-    } = instaniate_routes("0.02");
+    } = route;
 
     // generates all possible TradeV2 instances
     const trades = await TradeV2.getTradesExactIn(
@@ -204,16 +162,5 @@ async function execute_trade() {
     throw new Error("Error executing trade");
   }
 }
-const INTERVAL = 1000 * 10;
-async function main() {
-  try {
-    setInterval(async () => {
-      await execute_trade();
-    }, INTERVAL);
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error running script");
-  }
-}
 
-main();
+export { trade, getRoute };
