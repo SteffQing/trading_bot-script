@@ -1,30 +1,62 @@
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { publicClient } from "./const";
-import { createClient } from "./utils";
-import { parseEther, parseUnits } from "viem";
+import { BASES, publicClient } from "./const";
+import { createClient, getGasPrice } from "./utils";
+import { formatUnits, parseEther, parseUnits } from "viem";
+import { defund_account } from "./wallets";
 
-let PK: `0x${string}`[] = [];
-async function main() {
-  for (let i = 0; i < PK.length; i++) {
-    let client = createClient(PK[i]);
-    console.log(PK[i], "Done");
+// let PK: `0x${string}`[] = [];
+// async function main() {
+//   for (let i = 0; i < PK.length; i++) {
+//     let client = createClient(PK[i]);
+//     console.log(PK[i], "Done");
 
-    // const { request } = await publicClient.simulateContract({
-    //   address: "0xB6076C93701D6a07266c31066B298AeC6dd65c2d",
-    //   abi: ERC20ABI,
-    //   functionName: "transfer",
-    //   args: [
-    //     "0xEAe38e8d41aeCC027e1b68c31f7039Ae95651D4D",
-    //     parseUnits("0.1", 6),
-    //   ],
-    //   account: client.account,
-    // });
-    // await client.writeContract(request);
-    await client.sendTransaction({
-      to: "0xEAe38e8d41aeCC027e1b68c31f7039Ae95651D4D",
-      value: parseEther("0.075"),
-    });
+//     // const { request } = await publicClient.simulateContract({
+//     //   address: "0xB6076C93701D6a07266c31066B298AeC6dd65c2d",
+//     //   abi: ERC20ABI,
+//     //   functionName: "transfer",
+//     //   args: [
+//     //     "0xEAe38e8d41aeCC027e1b68c31f7039Ae95651D4D",
+//     //     parseUnits("0.1", 6),
+//     //   ],
+//     //   account: client.account,
+//     // });
+//     // await client.writeContract(request);
+//     await client.sendTransaction({
+//       to: "0xEAe38e8d41aeCC027e1b68c31f7039Ae95651D4D",
+//       value: parseEther("0.075"),
+//     });
+//   }
+// }
+
+// main();
+
+async function test_defund() {
+  const KEYS: `0x${string}`[] = [
+    "0x2f03e0799b4ae67c5f6b3e1c513b5cad870b7e606a4835bd2af27d0b2df59a87",
+    "0xca90f3f8b28cb2795ff59a0f43fef05d6563692c3e7d4151d84e44ea42cb1376",
+    "0x2f783b58047b952f52a4bdf1d625fe90eece5a250a24b7871b2fe166ce3e3dcc",
+    "0x45c01a16542bcdc1d66bfad1b1b1cec9d8986d3a78f268eaf54f273660311eda",
+    "0x7c6b8638a5393910d94593645a203568a2f42567ebe6890ba77719277adf0836",
+    "0x1b28f5f4802c9af7ed0e1bb27b2c692f25d69c693371b2148ba8973900ee1348",
+    "0x05db6691a21c901fee9608e031b6ce134e219f4c66c374f6edb9d4e8532528f5",
+  ];
+  for (let i = 0; i < KEYS.length; i++) {
+    let client = createClient(KEYS[i]);
+    await defund_account(BASES[1].address as `0x${string}`, client);
+  }
+  try {
+  } catch (error) {
+    console.log(error);
   }
 }
 
-main();
+test_defund();
+
+async function test_getGasPrice() {
+  let gasPrice = await getGasPrice();
+  console.log(gasPrice);
+  let gasFee = gasPrice * BigInt(21000);
+  console.log(gasFee, formatUnits(gasFee, 18));
+}
+
+// test_getGasPrice();

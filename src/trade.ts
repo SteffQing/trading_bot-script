@@ -156,14 +156,13 @@ async function trade(walletClient: WalletClient, route: Route) {
       args: args,
       account,
       value: BigInt(value),
-      nonce: nonce + 1,
+      nonce,
     });
     const hash = await walletClient.writeContract(request);
+    console.log(`Transaction sent with hash ${hash}`);
     const receipt = await publicClient.waitForTransactionReceipt({
       hash,
-      confirmations: 3,
     });
-    console.log(`Transaction sent with hash ${hash}`);
     return hash;
   } catch (error) {
     console.log(error);

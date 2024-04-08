@@ -20,6 +20,11 @@ async function getGas(account: Account, to: `0x${string}`, value: bigint) {
     value,
   });
 }
+
+async function getGasPrice() {
+  return await publicClient.getGasPrice();
+}
+
 async function wait(delay: number = 10000) {
   await new Promise<void>((resolve) => {
     setTimeout(() => {
@@ -48,4 +53,4 @@ async function getApproval(
   });
 }
 
-export { getApproval, getNonce, createClient, getGas, wait };
+export { getApproval, getNonce, createClient, getGas, wait, getGasPrice };

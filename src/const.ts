@@ -4,7 +4,6 @@ import { privateKeyToAccount } from "viem/accounts";
 import { avalancheFuji } from "viem/chains";
 import { config } from "dotenv";
 import { LB_ROUTER_V21_ADDRESS } from "@traderjoe-xyz/sdk-v2";
-import { ERC20ABI } from "@traderjoe-xyz/sdk";
 
 config();
 const privateKey = process.env.PRIVATE_KEY;

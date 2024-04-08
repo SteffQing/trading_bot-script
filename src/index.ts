@@ -47,8 +47,9 @@ async function run(params: BotInterface) {
         amount: max.toString(),
         recipientAddress: address,
       });
+      console.log("funded  account: ", +address);
+
       await approve_router(USDC.address as `0x${string}`, client);
-      await wait(5000);
 
       // Get random number between 0 and 1 to determine inputToken
       let index = getRandomNumber(0, 1);
@@ -78,7 +79,6 @@ async function run(params: BotInterface) {
         };
         let route = getRoute(routeParams);
         await trade(currentClient, route);
-        await wait();
         console.log(`Trade completed for ${PRIVATE_KEYS[j]}\n`);
       }
     }

@@ -14,7 +14,7 @@ import {
   parseUnits,
 } from "viem";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { getGas, getNonce, wait } from "./utils";
+import { getGas, getGasPrice, getNonce, wait } from "./utils";
 
 function gen_key() {
   const privateKey = generatePrivateKey();
@@ -22,6 +22,7 @@ function gen_key() {
 }
 
 const BigIntZero = BigInt(0);
+const BigIntRemainder = parseEther("0.000105");
 
 interface AccountFunding {
   tokenAddress: `0x${string}`;
@@ -40,10 +41,9 @@ async function fund_account(params: AccountFunding) {
       to: recipientAddress,
       value: parseEther(amount),
     });
-    const receipt = await publicClient.waitForTransactionReceipt({
-      hash: hash1,
-      confirmations: 3,
-    });
+    // const receipt = await publicClient.waitForTransactionReceipt({
+    //   hash: hash1,
+    // });
     // Fund with ERC20 token
     let nonce = await getNonce(account.address);
     const { request } = await publicClient.simulateContract({
@@ -55,10 +55,9 @@ async function fund_account(params: AccountFunding) {
       nonce: nonce + 1,
     });
     const hash2 = await mainWalletClient.writeContract(request);
-    const receipt2 = await publicClient.waitForTransactionReceipt({
-      hash: hash2,
-      confirmations: 3,
-    });
+    // const receipt2 = await publicClient.waitForTransactionReceipt({
+    //   hash: hash2,
+    // });
     return { hash1, hash2, method: "fund_account" };
   } catch (error) {
     throw new Error("funding account error: " + error);
@@ -81,7 +80,7 @@ async function defund_account(
       args: [defundAddress],
     })) as bigint;
     // defund ERC20 token
-    if (tokenBalance.toString() !== "0") {
+    if (tokenBalance > BigIntZero) {
       const { request } = await publicClient.simulateContract({
         address: tokenAddress,
         abi: ERC20ABI,
@@ -90,9 +89,8 @@ async function defund_account(
         account: defundAccount,
       });
       let hash2 = await defundClient.writeContract(request);
-      const receipt = await publicClient.waitForTransactionReceipt({
+      await publicClient.waitForTransactionReceipt({
         hash: hash2,
-        confirmations: 3,
       });
     }
 
@@ -100,36 +98,26 @@ async function defund_account(
     const ETH_Balance = await publicClient.getBalance({
       address: defundAddress,
     });
-    const gas = await getGas(account, defundAddress, ETH_Balance);
+    const gasLimit = BigInt(21000);
+    const gasPrice = await getGasPrice();
+    const gasFee = gasLimit * gasPrice;
     // Defund ETH
-    console.log(`*Important Log of Balances* 
-    GAS: ${gas}
+    console.log(`*Important Log of Balances*
     ETHER: ${ETH_Balance}
     USDC: ${tokenBalance}
-    *Types of Balances*
-    GAS type: ${typeof gas}
-    ETHER type: ${typeof ETH_Balance}
-    USDC type: ${typeof tokenBalance}
-    
-    *Subtract Balance from Gas*
-    GAS - ETHER: ${ETH_Balance - gas}
-    *BigInt Zero*
-    BigInt Zero: ${BigIntZero}
-    *Comparison*
-    ETH_Balance === BigIntZero: ${ETH_Balance === BigIntZero}
-    ETH_Balance > BigIntZero: ${ETH_Balance > BigIntZero}
-    ETH_Balance < BigIntZero: ${ETH_Balance < BigIntZero}
+    GASFEE: ${gasFee}
+    VALUE: ${ETH_Balance - (gasFee + BigIntRemainder)}
     `);
-    if (ETH_Balance > BigIntZero) {
+    if (ETH_Balance > BigIntRemainder) {
       let hash1 = await defundClient.sendTransaction({
         account: defundAccount,
         to: account.address,
-        value: ETH_Balance - gas,
+        value: ETH_Balance - (gasFee + BigIntRemainder),
         chain: undefined,
+        gas: gasLimit,
       });
-      const receipt = await publicClient.waitForTransactionReceipt({
+      await publicClient.waitForTransactionReceipt({
         hash: hash1,
-        confirmations: 3,
       });
     }
     return { method: "defund_account" };
@@ -153,11 +141,11 @@ async function approve_router(
       account: defundAccount,
     });
     let hash = await defundClient.writeContract(request);
+    console.log(`Approval hash: ${hash}`);
     const receipt = await publicClient.waitForTransactionReceipt({
       hash,
-      confirmations: 3,
     });
-
+    console.log("Approval complete");
     return { method: "approve_router", hash };
   } catch (error) {
     throw new Error("approve_router Error: " + error);
