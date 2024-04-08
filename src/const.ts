@@ -3,11 +3,14 @@ import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { avalancheFuji } from "viem/chains";
 import { config } from "dotenv";
+import { LB_ROUTER_V21_ADDRESS } from "@traderjoe-xyz/sdk-v2";
+import { ERC20ABI } from "@traderjoe-xyz/sdk";
 
 config();
 const privateKey = process.env.PRIVATE_KEY;
 const CHAIN_ID = ChainId.FUJI;
 const account = privateKeyToAccount(`0x${privateKey}`);
+const router = LB_ROUTER_V21_ADDRESS[CHAIN_ID];
 
 // initialize tokens
 const WETH = WNATIVE[CHAIN_ID]; // Token instance of WETH
@@ -43,20 +46,4 @@ const mainWalletClient = createWalletClient({
   transport: http(),
 });
 
-function createClient(privateKey: `0x${string}`) {
-  const newAccount = privateKeyToAccount(privateKey);
-  return createWalletClient({
-    account: newAccount,
-    chain: avalancheFuji,
-    transport: http(),
-  });
-}
-
-export {
-  BASES,
-  publicClient,
-  mainWalletClient,
-  CHAIN_ID,
-  account,
-  createClient,
-};
+export { BASES, publicClient, mainWalletClient, CHAIN_ID, account, router };

@@ -4,16 +4,15 @@ import {
   RouteV2,
   TradeV2,
   TradeOptions,
-  LB_ROUTER_V21_ADDRESS,
   jsonAbis,
 } from "@traderjoe-xyz/sdk-v2";
-import { Account, WalletClient, parseUnits } from "viem";
+import { WalletClient, parseUnits } from "viem";
 import { config } from "dotenv";
-import { publicClient, BASES, CHAIN_ID } from "./const";
+import { publicClient, BASES, CHAIN_ID, router } from "./const";
+import { getNonce } from "./utils";
 
 config();
 const { LBRouterV21ABI } = jsonAbis;
-const router = LB_ROUTER_V21_ADDRESS[CHAIN_ID];
 
 interface GetRouteParams {
   amount: string; // e.g. "20", "0.1"
@@ -147,6 +146,9 @@ async function trade(walletClient: WalletClient, route: Route) {
     } = bestTrade.swapCallParameters(swapOptions);
 
     // Step 9
+    let nonce = await getNonce(account.address);
+    console.log(`Nonce: ${nonce}`, account.address);
+
     const { request } = await publicClient.simulateContract({
       address: router,
       abi: LBRouterV21ABI,
@@ -154,8 +156,13 @@ async function trade(walletClient: WalletClient, route: Route) {
       args: args,
       account,
       value: BigInt(value),
+      nonce: nonce + 1,
     });
     const hash = await walletClient.writeContract(request);
+    const receipt = await publicClient.waitForTransactionReceipt({
+      hash,
+      confirmations: 3,
+    });
     console.log(`Transaction sent with hash ${hash}`);
     return hash;
   } catch (error) {
