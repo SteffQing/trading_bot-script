@@ -102,12 +102,6 @@ async function defund_account(
     const gasPrice = await getGasPrice();
     const gasFee = gasLimit * gasPrice;
     // Defund ETH
-    console.log(`*Important Log of Balances*
-    ETHER: ${ETH_Balance}
-    USDC: ${tokenBalance}
-    GASFEE: ${gasFee}
-    VALUE: ${ETH_Balance - (gasFee + BigIntRemainder)}
-    `);
     if (ETH_Balance > BigIntRemainder) {
       let hash1 = await defundClient.sendTransaction({
         account: defundAccount,
@@ -141,11 +135,9 @@ async function approve_router(
       account: defundAccount,
     });
     let hash = await defundClient.writeContract(request);
-    console.log(`Approval hash: ${hash}`);
-    const receipt = await publicClient.waitForTransactionReceipt({
+    await publicClient.waitForTransactionReceipt({
       hash,
     });
-    console.log("Approval complete");
     return { method: "approve_router", hash };
   } catch (error) {
     throw new Error("approve_router Error: " + error);

@@ -66,7 +66,7 @@ function getRoute(routeParams: GetRouteParams) {
       isNativeOut,
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("Error generating routes");
   }
 }
@@ -147,7 +147,6 @@ async function trade(walletClient: WalletClient, route: Route) {
 
     // Step 9
     let nonce = await getNonce(account.address);
-    console.log(`Nonce: ${nonce}`, account.address);
 
     const { request } = await publicClient.simulateContract({
       address: router,
@@ -165,7 +164,7 @@ async function trade(walletClient: WalletClient, route: Route) {
     });
     return hash;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw new Error("Error executing trade");
   }
 }

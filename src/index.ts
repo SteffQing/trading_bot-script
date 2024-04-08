@@ -25,7 +25,7 @@ async function run(params: BotInterface) {
     // token initializations
     const USDC = BASES[1];
 
-    const loopCount = loop * 3;
+    const loopCount = loop * loop;
 
     const InToken: { [key: `0x${string}`]: number } = {};
 
@@ -33,10 +33,10 @@ async function run(params: BotInterface) {
       if (CLIENTS.length === loop) {
         const oldClient = CLIENTS.shift();
         await defund_account(USDC.address as `0x${string}`, oldClient!);
+        PRIVATE_KEYS.shift();
       }
       // Generate new key and client, fund and add to array
       let privateKey = gen_key();
-      console.log(privateKey);
       PRIVATE_KEYS.push(privateKey);
 
       const client = createClient(privateKey);
@@ -47,19 +47,20 @@ async function run(params: BotInterface) {
         amount: max.toString(),
         recipientAddress: address,
       });
-      console.log("funded  account: ", +address);
 
       await approve_router(USDC.address as `0x${string}`, client);
 
-      // Get random number between 0 and 1 to determine inputToken
-      let index = getRandomNumber(0, 1);
+      // Get random number between 0 and 1 for index to determine inputToken
+      let index = getRandomIndex();
       InToken[address] = index;
 
       CLIENTS.push(client);
 
       for (let j = 0; j < CLIENTS.length; j++) {
         // Actually call trades on each client
-        let amount = getRandomNumber(min, max).toString();
+        let amount = getRandomNumber(min, max).toFixed(2).toString();
+        console.log("Amount: ", amount);
+
         let currentClient = CLIENTS[j];
         let currentAddress = currentClient.account?.address as `0x${string}`;
 
@@ -85,13 +86,9 @@ async function run(params: BotInterface) {
   } catch (err) {
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
-        let res = await defund_account(
-          BASES[1].address as `0x${string}`,
-          CLIENTS[i]
-        );
-        console.log(res);
+        await defund_account(BASES[1].address as `0x${string}`, CLIENTS[i]);
       }
-      console.log("Accounts defunded");
+      console.warn("Accounts defunded");
     } catch (error: any) {
       const currentTime = new Date();
 
@@ -106,11 +103,11 @@ async function run(params: BotInterface) {
         let account = PRIVATE_KEYS[i];
         appendFileSync(filePath, account + "\n");
       }
-      console.log("Error in catch block to defund accounts: ", error);
+      console.error("Error in catch block to defund accounts: ", error);
       throw new Error("defund Error in catch block of main function");
     }
 
-    console.log(err);
+    console.error(err);
     throw new Error("run Error");
   }
 }
@@ -141,7 +138,10 @@ function validateInputs(params: BotInterface) {
 }
 
 function getRandomNumber(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.random() * (max - min) + min;
+}
+function getRandomIndex() {
+  return Math.floor(Math.random() * 2);
 }
 
 run({ loop: 3, min: 0.01, max: 0.09 }).catch((error) => {
