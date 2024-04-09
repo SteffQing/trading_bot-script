@@ -1,11 +1,5 @@
 import { generatePrivateKey } from "viem/accounts";
-import {
-  CHAIN_ID,
-  account,
-  mainWalletClient,
-  publicClient,
-  router,
-} from "./const";
+import { account, mainWalletClient, publicClient, router } from "./const";
 import {
   Account,
   WalletClient,
@@ -14,7 +8,7 @@ import {
   parseUnits,
 } from "viem";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { getGas, getGasPrice, getNonce, wait } from "./utils";
+import { getGasPrice, getNonce, getBalance } from "./utils";
 
 function gen_key() {
   const privateKey = generatePrivateKey();
@@ -73,12 +67,7 @@ async function defund_account(
     const defundAddress = defundAccount.address;
 
     //Get ERC20 tokenBalance
-    const tokenBalance = (await publicClient.readContract({
-      address: tokenAddress,
-      abi: ERC20ABI,
-      functionName: "balanceOf",
-      args: [defundAddress],
-    })) as bigint;
+    const tokenBalance = await getBalance(defundAddress, tokenAddress);
     // defund ERC20 token
     if (tokenBalance > BigIntZero) {
       const { request } = await publicClient.simulateContract({
@@ -95,9 +84,7 @@ async function defund_account(
     }
 
     // Get ETH Balance
-    const ETH_Balance = await publicClient.getBalance({
-      address: defundAddress,
-    });
+    const ETH_Balance = await getBalance(defundAddress);
     const gasLimit = BigInt(21000);
     const gasPrice = await getGasPrice();
     const gasFee = gasLimit * gasPrice;

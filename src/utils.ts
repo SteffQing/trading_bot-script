@@ -53,4 +53,25 @@ async function getApproval(
   });
 }
 
-export { getApproval, getNonce, createClient, getGas, wait, getGasPrice };
+const WETH = "0xd00ae08403B9bbb9124bB305C09058E32C39A48c";
+async function getBalance(
+  walletAddress: `0x${string}`,
+  tokenAddress?: `0x${string}` | undefined
+) {
+  let balance = BigInt(0);
+  if (tokenAddress !== undefined && tokenAddress !== WETH) {
+    balance = (await publicClient.readContract({
+      address: tokenAddress,
+      abi: ERC20ABI,
+      functionName: "balanceOf",
+      args: [walletAddress],
+    })) as bigint;
+  } else {
+    balance = await publicClient.getBalance({
+      address: walletAddress,
+    });
+  }
+  return balance;
+}
+
+export { getApproval, getNonce, createClient, getGas, getBalance, getGasPrice };

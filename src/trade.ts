@@ -158,8 +158,8 @@ async function trade(walletClient: WalletClient, route: Route) {
       nonce,
     });
     const hash = await walletClient.writeContract(request);
-    console.log(`Transaction sent with hash ${hash}`);
-    const receipt = await publicClient.waitForTransactionReceipt({
+    console.log(`Transaction sent with hash ${hash}\n`);
+    await publicClient.waitForTransactionReceipt({
       hash,
     });
     return hash;

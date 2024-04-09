@@ -1,7 +1,7 @@
-import { WalletClient } from "viem";
-import { BASES, router } from "./const";
+import { WalletClient, formatUnits, parseUnits } from "viem";
+import { BASES } from "./const";
 import { trade, getRoute } from "./trade";
-import { createClient, wait } from "./utils";
+import { createClient, getBalance } from "./utils";
 import {
   gen_key,
   fund_account,
@@ -58,8 +58,6 @@ async function run(params: BotInterface) {
 
       for (let j = 0; j < CLIENTS.length; j++) {
         // Actually call trades on each client
-        let amount = getRandomNumber(min, max).toFixed(2).toString();
-        console.log("Amount: ", amount);
 
         let currentClient = CLIENTS[j];
         let currentAddress = currentClient.account?.address as `0x${string}`;
@@ -68,8 +66,19 @@ async function run(params: BotInterface) {
         let inputToken = BASES[tokenIndex];
         let outputToken = BASES[(tokenIndex + 1) % 2];
         InToken[currentAddress] = tokenIndex === 0 ? 1 : 0;
-
         let [isNativeIn, isNativeOut] = [tokenIndex === 0, tokenIndex === 1];
+
+        let balance: bigint | string | number = await getBalance(
+          currentAddress,
+          inputToken.address as `0x${string}`
+        );
+        balance = formatUnits(balance, inputToken.decimals);
+        balance = Number(balance);
+        const newMax = max >= balance ? balance : max;
+        let amount = getRandomNumber(min, newMax).toFixed(2).toString();
+        console.log(`Amount: ${amount}
+${balance} ${inputToken.symbol}
+${newMax}                      `);
 
         let routeParams = {
           amount,
@@ -80,7 +89,7 @@ async function run(params: BotInterface) {
         };
         let route = getRoute(routeParams);
         await trade(currentClient, route);
-        console.log(`Trade completed for ${PRIVATE_KEYS[j]}\n`);
+        // console.log(`Trade completed for ${PRIVATE_KEYS[j]}\n`);
       }
     }
   } catch (err) {
@@ -144,7 +153,7 @@ function getRandomIndex() {
   return Math.floor(Math.random() * 2);
 }
 
-run({ loop: 3, min: 0.01, max: 0.09 }).catch((error) => {
+run({ loop: 3, min: 0.2, max: 1.4 }).catch((error) => {
   console.error("main error", error);
   process.exit(1);
 });
