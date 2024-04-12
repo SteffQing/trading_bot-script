@@ -21,11 +21,13 @@ const BigIntRemainder = parseEther("0.000105");
 interface AccountFunding {
   tokenAddress: `0x${string}`;
   decimals: number;
-  amount: string;
+  eth_amount: string;
+  token_amount: string;
   recipientAddress: `0x${string}`;
 }
 async function fund_account(params: AccountFunding) {
-  const { tokenAddress, decimals, amount, recipientAddress } = params;
+  const { tokenAddress, decimals, eth_amount, token_amount, recipientAddress } =
+    params;
   // TODO
   // : Implement funding account logic based on current gas prices
 
@@ -33,7 +35,7 @@ async function fund_account(params: AccountFunding) {
     // Fund with ETH
     const hash1 = await mainWalletClient.sendTransaction({
       to: recipientAddress,
-      value: parseEther(amount),
+      value: parseEther(eth_amount),
     });
     // const receipt = await publicClient.waitForTransactionReceipt({
     //   hash: hash1,
@@ -44,7 +46,7 @@ async function fund_account(params: AccountFunding) {
       address: tokenAddress,
       abi: ERC20ABI,
       functionName: "transfer",
-      args: [recipientAddress, parseUnits(amount, decimals)],
+      args: [recipientAddress, parseUnits(token_amount, decimals)],
       account,
       nonce: nonce + 1,
     });

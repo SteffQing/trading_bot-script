@@ -28,8 +28,6 @@ const USDT = new Token(
   "Tether USD"
 );
 
-const TOKENS = { usdt: USDT, usdc: USDC, weth: WETH };
-
 /* Step 4 */
 // declare bases used to generate trade routes
 const BASES = [WETH, USDC, USDT];

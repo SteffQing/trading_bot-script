@@ -10,20 +10,27 @@ import {
 } from "./wallets";
 import { appendFileSync, writeFileSync } from "fs";
 import * as path from "path";
+import { Token } from "@traderjoe-xyz/sdk-core";
 
+const [WETH, USDC] = BASES;
 interface BotInterface {
   loop: number;
   min: number;
   max: number;
 }
-async function run(params: BotInterface) {
+interface AssetParams {
+  [symbol: string]: {
+    min: number;
+    max: number;
+  };
+}
+async function run(params: AssetParams, loop: number) {
   const CLIENTS: WalletClient[] = [];
   const PRIVATE_KEYS: string[] = [];
   try {
-    const { loop, min, max } = params;
-    // validateInputs(params);
-    // token initializations
-    const USDC = BASES[1];
+    if (loop <= 1) {
+      throw Error("Loop must be greater than 1");
+    }
 
     const loopCount = loop * loop;
 
@@ -44,7 +51,8 @@ async function run(params: BotInterface) {
       await fund_account({
         tokenAddress: USDC.address as `0x${string}`,
         decimals: USDC.decimals,
-        amount: max.toString(),
+        eth_amount: params[WETH.symbol!].max.toString(),
+        token_amount: params[USDC.symbol!].max.toString(),
         recipientAddress: address,
       });
 
@@ -68,17 +76,13 @@ async function run(params: BotInterface) {
         InToken[currentAddress] = tokenIndex === 0 ? 1 : 0;
         let [isNativeIn, isNativeOut] = [tokenIndex === 0, tokenIndex === 1];
 
-        let balance: bigint | string | number = await getBalance(
-          currentAddress,
-          inputToken.address as `0x${string}`
-        );
-        balance = formatUnits(balance, inputToken.decimals);
-        balance = Number(balance);
-        const newMax = max >= balance ? balance : max;
+        const [min, max] = [
+          params[inputToken.symbol!].min,
+          params[inputToken.symbol!].max,
+        ];
+
+        const newMax = await getMax(currentAddress, inputToken, max);
         let amount = getRandomNumber(min, newMax).toFixed(2).toString();
-        console.log(`Amount: ${amount}
-${balance} ${inputToken.symbol}
-${newMax}                      `);
 
         let routeParams = {
           amount,
@@ -89,13 +93,12 @@ ${newMax}                      `);
         };
         let route = getRoute(routeParams);
         await trade(currentClient, route);
-        // console.log(`Trade completed for ${PRIVATE_KEYS[j]}\n`);
       }
     }
   } catch (err) {
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
-        await defund_account(BASES[1].address as `0x${string}`, CLIENTS[i]);
+        await defund_account(USDC.address as `0x${string}`, CLIENTS[i]);
       }
       console.warn("Accounts defunded");
     } catch (error: any) {
@@ -123,14 +126,6 @@ ${newMax}                      `);
 
 function validateInputs(params: BotInterface) {
   const { loop, min, max } = params;
-  //   if (
-  //     typeof tokenIn !== "string" ||
-  //     tokenIn.trim() === "" ||
-  //     typeof tokenOut !== "string" ||
-  //     tokenOut.trim() === ""
-  //   ) {
-  //     throw new Error("tokenIn and tokenOut must be non-empty strings");
-  //   }
 
   // Validate loop is a positive integer
   if (!Number.isInteger(loop) || loop <= 0) {
@@ -153,7 +148,35 @@ function getRandomIndex() {
   return Math.floor(Math.random() * 2);
 }
 
-run({ loop: 3, min: 0.2, max: 1.4 }).catch((error) => {
+async function getMax(
+  currentAddress: `0x${string}`,
+  inputToken: Token,
+  max: number
+) {
+  let balance: bigint | string | number = await getBalance(
+    currentAddress,
+    inputToken.address as `0x${string}`
+  );
+  balance = formatUnits(balance, inputToken.decimals);
+  balance = Number(balance);
+
+  return max >= balance
+    ? inputToken.symbol === WETH.symbol!
+      ? balance - balance * 0.1
+      : balance
+    : max;
+}
+const assetParams = {
+  [WETH.symbol!]: {
+    min: 0.1,
+    max: 1,
+  },
+  [USDC.symbol!]: {
+    min: 0.1,
+    max: 1,
+  },
+};
+run(assetParams, 2).catch((error) => {
   console.error("main error", error);
   process.exit(1);
 });
