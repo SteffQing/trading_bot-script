@@ -1,4 +1,4 @@
-import { WalletClient, formatUnits, parseUnits } from "viem";
+import { WalletClient, formatUnits } from "viem";
 import { BASES } from "./const";
 import { trade, getRoute } from "./trade";
 import { createClient, getBalance } from "./utils";

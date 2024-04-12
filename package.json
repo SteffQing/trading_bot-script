@@ -18,10 +18,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "mysql": "^2.18.1",
     "prettier": "^3.2.5",
     "viem": "^2.9.9"
   },
   "devDependencies": {
+    "@types/mysql": "^2.15.26",
     "@types/node": "^20.12.4",
     "nodemon": "^3.1.0",
     "typescript": "^5.4.4"
