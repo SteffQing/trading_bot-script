@@ -10,6 +10,7 @@ import { WalletClient, parseUnits } from "viem";
 import { config } from "dotenv";
 import { publicClient, BASES, CHAIN_ID, router } from "./const";
 import { getNonce } from "./utils";
+import log from "./fs";
 
 config();
 const { LBRouterV21ABI } = jsonAbis;
@@ -21,10 +22,16 @@ interface GetRouteParams {
   isNativeIn: boolean;
   isNativeOut: boolean;
 }
+
 function getRoute(routeParams: GetRouteParams) {
   try {
-    const { amount, inputToken, outputToken, isNativeIn, isNativeOut } =
-      routeParams;
+    const {
+      amount,
+      inputToken,
+      outputToken,
+      isNativeIn,
+      isNativeOut
+    } = routeParams;
 
     // specify whether user gave an exact inputToken or outputToken value for the trade
     const isExactIn = true;
@@ -121,10 +128,9 @@ async function trade(walletClient: WalletClient, route: Route) {
 
     // get trade fee information
     const { totalFeePct, feeAmountIn } = await bestTrade.getTradeFee();
-    console.log("Total fees percentage", totalFeePct.toSignificant(6), "%");
-    console.log(
-      `Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`
-    );
+
+    log(`Total fees percentage, ${totalFeePct.toSignificant(6)}`)
+    log(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`)
 
     // Step 8
     // set slippage tolerance
@@ -158,13 +164,16 @@ async function trade(walletClient: WalletClient, route: Route) {
       nonce,
     });
     const hash = await walletClient.writeContract(request);
-    console.log(`Transaction sent with hash ${hash}\n`);
+
+    log(`Transaction sent with hash ${hash} \n\n`);
+
     await publicClient.waitForTransactionReceipt({
       hash,
     });
     return hash;
   } catch (error) {
-    console.error(error);
+    log(`${error} \n\n`);
+
     throw new Error("Error executing trade");
   }
 }

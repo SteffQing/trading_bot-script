@@ -9,9 +9,12 @@ import {
 } from "viem";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
 import { getGasPrice, getNonce, getBalance } from "./utils";
+import { log } from "console";
 
 function gen_key() {
   const privateKey = generatePrivateKey();
+
+  log(privateKey, './wallets.txt')
   return privateKey;
 }
 
@@ -25,6 +28,7 @@ interface AccountFunding {
   token_amount: string;
   recipientAddress: `0x${string}`;
 }
+
 async function fund_account(params: AccountFunding) {
   const { tokenAddress, decimals, eth_amount, token_amount, recipientAddress } =
     params;
@@ -56,7 +60,7 @@ async function fund_account(params: AccountFunding) {
     });
     return { hash1, hash2, method: "fund_account" };
   } catch (error) {
-    throw new Error("funding account error: " + error);
+    log("funding account error: " + error);
   }
 }
 
@@ -105,6 +109,7 @@ async function defund_account(
     }
     return { method: "defund_account" };
   } catch (error) {
+    log(error)
     throw new Error("defund_account error: " + error);
   }
 }
@@ -123,13 +128,16 @@ async function approve_router(
       args: [router, maxUint256],
       account: defundAccount,
     });
+
     let hash = await defundClient.writeContract(request);
+
     await publicClient.waitForTransactionReceipt({
       hash,
     });
+
     return { method: "approve_router", hash };
   } catch (error) {
-    throw new Error("approve_router Error: " + error);
+    log("approve_router Error: " + error);
   }
 }
 
