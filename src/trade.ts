@@ -11,6 +11,7 @@ import { config } from "dotenv";
 import { publicClient, BASES, CHAIN_ID, router } from "./const";
 import { getNonce } from "./utils";
 import log from "./fs";
+import { insertDB, txn_sql } from "./database";
 
 config();
 const { LBRouterV21ABI } = jsonAbis;
@@ -25,13 +26,8 @@ interface GetRouteParams {
 
 function getRoute(routeParams: GetRouteParams) {
   try {
-    const {
-      amount,
-      inputToken,
-      outputToken,
-      isNativeIn,
-      isNativeOut
-    } = routeParams;
+    const { amount, inputToken, outputToken, isNativeIn, isNativeOut } =
+      routeParams;
 
     // specify whether user gave an exact inputToken or outputToken value for the trade
     const isExactIn = true;
@@ -129,8 +125,8 @@ async function trade(walletClient: WalletClient, route: Route) {
     // get trade fee information
     const { totalFeePct, feeAmountIn } = await bestTrade.getTradeFee();
 
-    log(`Total fees percentage, ${totalFeePct.toSignificant(6)}`)
-    log(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`)
+    log(`Total fees percentage, ${totalFeePct.toSignificant(6)}`);
+    log(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`);
 
     // Step 8
     // set slippage tolerance
@@ -164,6 +160,19 @@ async function trade(walletClient: WalletClient, route: Route) {
       nonce,
     });
     const hash = await walletClient.writeContract(request);
+
+    let txn_data = [
+      hash,
+      account.address,
+      amountIn.token.symbol,
+      outputToken.symbol,
+      amountIn.toExact(),
+      bestTrade.outputAmount.toExact(),
+      new Date().toISOString().slice(0, 19).replace("T", " "),
+    ];
+
+    console.log(txn_data);
+    insertDB(txn_sql, txn_data);
 
     log(`Transaction sent with hash ${hash} \n\n`);
 

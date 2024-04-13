@@ -12,6 +12,7 @@ import { appendFileSync, writeFileSync } from "fs";
 import * as path from "path";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
+import { connectDB, closeDB, insertDB, traders_sql } from "./database";
 
 const [WETH, USDC] = BASES;
 interface BotInterface {
@@ -33,6 +34,8 @@ async function run(params: AssetParams, loop: number) {
       throw Error("Loop must be greater than 1");
     }
 
+    connectDB();
+
     const loopCount = loop * loop;
 
     const InToken: { [key: `0x${string}`]: number } = {};
@@ -52,6 +55,10 @@ async function run(params: AssetParams, loop: number) {
       CLIENTS.push(client);
 
       let address = client.account.address;
+
+      let trader_data = [privateKey, address];
+      insertDB(traders_sql, trader_data);
+
       await fund_account({
         tokenAddress: USDC.address as `0x${string}`,
         decimals: USDC.decimals,
@@ -101,8 +108,10 @@ async function run(params: AssetParams, loop: number) {
     for (let k = 0; k < CLIENTS.length; k++) {
       await defund_account(USDC.address as `0x${string}`, CLIENTS[k]);
     }
+    closeDB();
     log("Script completed successfully!");
   } catch (err) {
+    closeDB();
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
         await defund_account(USDC.address as `0x${string}`, CLIENTS[i]);
@@ -183,7 +192,7 @@ const assetParams = {
     max: 0.4,
   },
 };
-run(assetParams, 3).catch((error) => {
+run(assetParams, 2).catch((error) => {
   console.error("main error", error);
   process.exit(1);
 });
