@@ -176,14 +176,14 @@ async function getMax(
 const assetParams = {
   [WETH.symbol!]: {
     min: 0.01,
-    max: 0.1,
+    max: 0.02,
   },
   [USDC.symbol!]: {
-    min: 0.5,
-    max: 1,
+    min: 0.1,
+    max: 0.4,
   },
 };
-run(assetParams, 2).catch((error) => {
+run(assetParams, 3).catch((error) => {
   console.error("main error", error);
   process.exit(1);
 });

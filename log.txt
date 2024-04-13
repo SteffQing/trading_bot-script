@@ -40,3 +40,76 @@ Version: viem@2.9.16
 Sat, 13 Apr. 2024 20:55 : Error: No valid trade found 
 
 
+Sat, 13 Apr. 2024 21:11 : funding account error: TransactionExecutionError: Missing or invalid parameters.
+Double check you have provided the correct parameters.
+
+URL: https://api.avax.network/ext/bc/C/rpc
+Request body: {"method":"eth_estimateGas","params":[{"from":"0xA1C05aEdCc8A0F45ffc85648B420A47bB35529d2","maxFeePerGas":"0x3459a40168e","maxPriorityFeePerGas":"0x0","nonce":"0x12","to":"0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb","value":"0x470de4df820000"}]}
+ 
+Estimate Gas Arguments:
+  from:                  0xA1C05aEdCc8A0F45ffc85648B420A47bB35529d2
+  to:                    0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+  value:                 0.02 AVAX
+  maxFeePerGas:          3597.475518094 gwei
+  maxPriorityFeePerGas:  0 gwei
+  nonce:                 18
+ 
+Request Arguments:
+  from:   0xA1C05aEdCc8A0F45ffc85648B420A47bB35529d2
+  to:     0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+  value:  0.02 ETH
+
+Details: gas required exceeds allowance (18649)
+Version: viem@2.9.9
+Sat, 13 Apr. 2024 21:11 : approve_router Error: TransactionExecutionError: Missing or invalid parameters.
+Double check you have provided the correct parameters.
+
+URL: https://api.avax.network/ext/bc/C/rpc
+Request body: {"method":"eth_estimateGas","params":[{"data":"0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb","maxFeePerGas":"0x3459a40168e","maxPriorityFeePerGas":"0x0","nonce":"0x0","to":"0x95430905F4B0dA123d41BA96600427d2C92B188a"}]}
+ 
+Estimate Gas Arguments:
+  from:                  0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+  to:                    0x95430905F4B0dA123d41BA96600427d2C92B188a
+  data:                  0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+  maxFeePerGas:          3597.475518094 gwei
+  maxPriorityFeePerGas:  0 gwei
+  nonce:                 0
+ 
+Request Arguments:
+  from:  0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+  to:    0x95430905F4B0dA123d41BA96600427d2C92B188a
+  data:  0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+Details: gas required exceeds allowance (0)
+Version: viem@2.9.9
+Sat, 13 Apr. 2024 21:11 : Total fees percentage, 0.3
+Sat, 13 Apr. 2024 21:11 : Fee: 0.00003 WAVAX
+Sat, 13 Apr. 2024 21:11 : ContractFunctionExecutionError: The total cost (gas * gas fee + value) of executing this transaction exceeds the balance of the account.
+
+This error could arise when the account does not have enough funds to:
+ - pay for the total gas fee,
+ - pay for the value to send.
+ 
+The cost of the transaction is calculated as `gas * gas fee + value`, where:
+ - `gas` is the amount of gas needed for transaction to execute,
+ - `gas fee` is the gas fee,
+ - `value` is the amount of ether to send to the recipient.
+ 
+Raw Call Arguments:
+  from:   0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+  to:     0xb4315e873dBcf96Ffd0acd8EA43f689D8c20fB30
+  value:  0.01 AVAX
+  data:   0xb066ea7c0000000000000000000000000000000000000000000000000305da8a53c13a8500000000000000000000000000000000000000000000000000000000000000800000000000000000000000001f29a1c86b9ddbc0d857235ea5158680b95bbdfb00000000000000000000000000000000000000000000000000000000661af519000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000b31f66aa3c1e785363f0875a1b74e27b85fd66c700000000000000000000000095430905f4b0da123d41ba96600427d2c92b188a
+  nonce:  0
+ 
+Contract Call:
+  address:   0xb4315e873dBcf96Ffd0acd8EA43f689D8c20fB30
+  function:  swapExactNATIVEForTokens(uint256 amountOutMin, (uint256[] pairBinSteps, uint8[] versions, address[] tokenPath), address to, uint256 deadline)
+  args:                              (0x305da8a53c13a85, {"pairBinSteps":["0x0"],"versions":[0],"tokenPath":["0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7","0x95430905F4B0dA123d41BA96600427d2C92B188a"]}, 0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb, 0x661af519)
+  sender:    0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb
+
+Docs: https://viem.sh/docs/contract/simulateContract
+Details: err: insufficient funds for gas * price + value: address 0x1f29a1C86B9DdBC0d857235EA5158680b95BbDfb have 0 want 10000000000000000 (supplied gas 50000000)
+Version: viem@2.9.9 
+
+
