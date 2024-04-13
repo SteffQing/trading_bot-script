@@ -171,7 +171,6 @@ async function trade(walletClient: WalletClient, route: Route) {
       new Date().toISOString().slice(0, 19).replace("T", " "),
     ];
 
-    console.log(txn_data);
     insertDB(txn_sql, txn_data);
 
     log(`Transaction sent with hash ${hash} \n\n`);
