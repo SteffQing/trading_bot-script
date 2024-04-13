@@ -95,6 +95,11 @@ async function run(params: AssetParams, loop: number) {
         await trade(currentClient, route);
       }
     }
+
+    for (let k = 0; k < CLIENTS.length; k++) {
+      await defund_account(USDC.address as `0x${string}`, CLIENTS[k]);
+    }
+    console.log("Script completed successfully!");
   } catch (err) {
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
@@ -168,12 +173,12 @@ async function getMax(
 }
 const assetParams = {
   [WETH.symbol!]: {
-    min: 0.1,
-    max: 1,
+    min: 0.01,
+    max: 0.1,
   },
   [USDC.symbol!]: {
-    min: 0.1,
-    max: 1,
+    min: 1,
+    max: 5,
   },
 };
 run(assetParams, 2).catch((error) => {
