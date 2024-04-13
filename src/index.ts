@@ -47,6 +47,8 @@ async function run(params: AssetParams, loop: number) {
       PRIVATE_KEYS.push(privateKey);
 
       const client = createClient(privateKey);
+      CLIENTS.push(client);
+
       let address = client.account.address;
       await fund_account({
         tokenAddress: USDC.address as `0x${string}`,
@@ -61,8 +63,6 @@ async function run(params: AssetParams, loop: number) {
       // Get random number between 0 and 1 for index to determine inputToken
       let index = getRandomIndex();
       InToken[address] = index;
-
-      CLIENTS.push(client);
 
       for (let j = 0; j < CLIENTS.length; j++) {
         // Actually call trades on each client
@@ -177,8 +177,8 @@ const assetParams = {
     max: 0.1,
   },
   [USDC.symbol!]: {
-    min: 1,
-    max: 5,
+    min: 0.5,
+    max: 2,
   },
 };
 run(assetParams, 2).catch((error) => {

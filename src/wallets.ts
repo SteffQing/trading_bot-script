@@ -51,9 +51,9 @@ async function fund_account(params: AccountFunding) {
       nonce: nonce + 1,
     });
     const hash2 = await mainWalletClient.writeContract(request);
-    // const receipt2 = await publicClient.waitForTransactionReceipt({
-    //   hash: hash2,
-    // });
+    await publicClient.waitForTransactionReceipt({
+      hash: hash2,
+    });
     return { hash1, hash2, method: "fund_account" };
   } catch (error) {
     throw new Error("funding account error: " + error);

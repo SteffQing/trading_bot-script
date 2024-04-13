@@ -1,14 +1,14 @@
 import { Account, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { avalancheFuji } from "viem/chains";
+import { avalanche } from "viem/chains";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { publicClient } from "./const";
+import { BASES, publicClient } from "./const";
 
 function createClient(privateKey: `0x${string}`) {
   const newAccount = privateKeyToAccount(privateKey);
   return createWalletClient({
     account: newAccount,
-    chain: avalancheFuji,
+    chain: avalanche,
     transport: http(),
   });
 }
@@ -53,13 +53,15 @@ async function getApproval(
   });
 }
 
-const WETH = "0xd00ae08403B9bbb9124bB305C09058E32C39A48c";
 async function getBalance(
   walletAddress: `0x${string}`,
   tokenAddress?: `0x${string}` | undefined
 ) {
   let balance = BigInt(0);
-  if (tokenAddress !== undefined && tokenAddress !== WETH) {
+  if (
+    tokenAddress !== undefined &&
+    tokenAddress.toLowerCase() !== BASES[0].address.toLowerCase()
+  ) {
     balance = (await publicClient.readContract({
       address: tokenAddress,
       abi: ERC20ABI,
