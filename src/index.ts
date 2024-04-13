@@ -179,7 +179,7 @@ const assetParams = {
   },
   [USDC.symbol!]: {
     min: 0.5,
-    max: 2,
+    max: 1,
   },
 };
 run(assetParams, 2).catch((error) => {
