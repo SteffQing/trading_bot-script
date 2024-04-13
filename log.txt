@@ -1,0 +1,42 @@
+Sat, 13 Apr. 2024 20:55 : funding account error: TransactionExecutionError: The total cost (gas * gas fee + value) of executing this transaction exceeds the balance of the account.
+
+This error could arise when the account does not have enough funds to:
+ - pay for the total gas fee,
+ - pay for the value to send.
+ 
+The cost of the transaction is calculated as `gas * gas fee + value`, where:
+ - `gas` is the amount of gas needed for transaction to execute,
+ - `gas fee` is the gas fee,
+ - `value` is the amount of ether to send to the recipient.
+ 
+Request Arguments:
+  from:   0xA1C05aEdCc8A0F45ffc85648B420A47bB35529d2
+  to:     0xbBE57dEB89c7c6595a6FBB17EA01ae34538B1a86
+  value:  0.1 ETH
+
+Details: insufficient funds for transfer
+Version: viem@2.9.16
+Sat, 13 Apr. 2024 20:55 : approve_router Error: TransactionExecutionError: Missing or invalid parameters.
+Double check you have provided the correct parameters.
+
+URL: https://api.avax.network/ext/bc/C/rpc
+Request body: {"method":"eth_estimateGas","params":[{"data":"0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","from":"0xbBE57dEB89c7c6595a6FBB17EA01ae34538B1a86","maxFeePerGas":"0x46491ed3ee","maxPriorityFeePerGas":"0x0","nonce":"0x0","to":"0x95430905F4B0dA123d41BA96600427d2C92B188a"}]}
+ 
+Estimate Gas Arguments:
+  from:                  0xbBE57dEB89c7c6595a6FBB17EA01ae34538B1a86
+  to:                    0x95430905F4B0dA123d41BA96600427d2C92B188a
+  data:                  0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+  maxFeePerGas:          301.874467822 gwei
+  maxPriorityFeePerGas:  0 gwei
+  nonce:                 0
+ 
+Request Arguments:
+  from:  0xbBE57dEB89c7c6595a6FBB17EA01ae34538B1a86
+  to:    0x95430905F4B0dA123d41BA96600427d2C92B188a
+  data:  0x095ea7b3000000000000000000000000b4315e873dbcf96ffd0acd8ea43f689d8c20fb30ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+Details: gas required exceeds allowance (0)
+Version: viem@2.9.16
+Sat, 13 Apr. 2024 20:55 : Error: No valid trade found 
+
+

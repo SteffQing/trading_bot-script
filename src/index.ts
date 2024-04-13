@@ -11,6 +11,7 @@ import {
 import { appendFileSync, writeFileSync } from "fs";
 import * as path from "path";
 import { Token } from "@traderjoe-xyz/sdk-core";
+import log from "./fs";
 
 const [WETH, USDC] = BASES;
 interface BotInterface {
@@ -41,7 +42,7 @@ async function run(params: AssetParams, loop: number) {
         const oldClient = CLIENTS.shift();
         await defund_account(USDC.address as `0x${string}`, oldClient!);
         PRIVATE_KEYS.shift();
-        console.log("Client defunded");
+        log("Client defunded");
       }
       // Generate new key and client, fund and add to array
       let privateKey = gen_key();
@@ -100,13 +101,13 @@ async function run(params: AssetParams, loop: number) {
     for (let k = 0; k < CLIENTS.length; k++) {
       await defund_account(USDC.address as `0x${string}`, CLIENTS[k]);
     }
-    console.log("Script completed successfully!");
+    log("Script completed successfully!");
   } catch (err) {
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
         await defund_account(USDC.address as `0x${string}`, CLIENTS[i]);
       }
-      console.warn("Accounts defunded");
+      log("Accounts defunded");
     } catch (error: any) {
       const currentTime = new Date();
 

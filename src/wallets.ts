@@ -9,7 +9,7 @@ import {
 } from "viem";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
 import { getGasPrice, getNonce, getBalance } from "./utils";
-import { log } from "console";
+import log from "./fs";
 
 function gen_key() {
   const privateKey = generatePrivateKey();
