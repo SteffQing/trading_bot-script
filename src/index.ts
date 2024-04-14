@@ -8,18 +8,12 @@ import {
   defund_account,
   approve_router,
 } from "./wallets";
-import { appendFileSync, writeFileSync } from "fs";
-import * as path from "path";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
 import { connectDB, closeDB, insertDB, traders_sql } from "./database";
 
 const [WETH, USDC] = BASES;
-interface BotInterface {
-  loop: number;
-  min: number;
-  max: number;
-}
+
 interface AssetParams {
   [symbol: string]: {
     min: number;
@@ -129,23 +123,6 @@ async function run(params: AssetParams, loop: number) {
     log(err, undefined, true);
   } finally {
     closeDB();
-  }
-}
-
-function validateInputs(params: BotInterface) {
-  const { loop, min, max } = params;
-
-  // Validate loop is a positive integer
-  if (!Number.isInteger(loop) || loop <= 0) {
-    throw new Error("loop must be a positive integer");
-  }
-
-  // Validate min/max are positive integers
-  if (!Number.isInteger(min) || min < 0) {
-    throw new Error("min must be a non-negative integer");
-  }
-  if (!Number.isInteger(max) || max < min) {
-    throw new Error("max must be greater than min");
   }
 }
 
