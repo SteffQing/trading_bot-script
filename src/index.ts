@@ -26,6 +26,7 @@ interface AssetParams {
     max: number;
   };
 }
+
 async function run(params: AssetParams, loop: number) {
   const CLIENTS: WalletClient[] = [];
   const PRIVATE_KEYS: string[] = [];
@@ -108,35 +109,26 @@ async function run(params: AssetParams, loop: number) {
     for (let k = 0; k < CLIENTS.length; k++) {
       await defund_account(USDC.address as `0x${string}`, CLIENTS[k]);
     }
-    closeDB();
+
     log("Script completed successfully!");
   } catch (err) {
-    closeDB();
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
         await defund_account(USDC.address as `0x${string}`, CLIENTS[i]);
       }
+
       log("Accounts defunded");
-    } catch (error: any) {
-      const currentTime = new Date();
-
-      const folderPath = "./error"; // Path to the error folder
-      const fileName = `error_log_${currentTime.getTime()}.txt`;
-      const filePath = path.join(folderPath, fileName);
-
-      const formattedErrorMsg = `**Error in defund_account:**\n\n${error.toString().replace(/\n/g, "\r\n")}\n\n**Private Keys:**\n\n`;
-      writeFileSync(filePath, formattedErrorMsg);
-
-      for (let i = 0; i < PRIVATE_KEYS.length; i++) {
-        let account = PRIVATE_KEYS[i];
-        appendFileSync(filePath, account + "\n");
-      }
-      console.error("Error in catch block to defund accounts: ", error);
-      throw new Error("defund Error in catch block of main function");
+    } catch (e: any) {
+      log(
+        `Error in defund accounts: ${e.toString().replace(/\n/g, "\r\n")}`,
+        undefined,
+        true
+      );
     }
 
-    console.error(err);
-    throw new Error("run Error");
+    log(err, undefined, true);
+  } finally {
+    closeDB();
   }
 }
 
@@ -182,6 +174,7 @@ async function getMax(
       : balance
     : max;
 }
+
 const assetParams = {
   [WETH.symbol!]: {
     min: 0.01,
@@ -189,9 +182,10 @@ const assetParams = {
   },
   [USDC.symbol!]: {
     min: 0.1,
-    max: 0.4,
+    max: 0.5,
   },
 };
+
 run(assetParams, 2).catch((error) => {
   console.error("main error", error);
   process.exit(1);

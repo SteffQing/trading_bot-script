@@ -1,4 +1,7 @@
+import { config } from 'dotenv';
 import fs from 'fs';
+
+config();
 
 function now() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -19,7 +22,7 @@ function now() {
 export default function log(
     data: any,
     filePath = './log.txt',
-    isError = false
+    isError = false,
 ) {
     const contentLine = `${now()} : ${data}\n`;
 
@@ -30,4 +33,8 @@ export default function log(
     });
 
     // Throw error in test mode
+    const isTest = process.env.MODE == "test";
+    if (isTest) console.log(data)
+
+    if (isError) throw new Error(data);
 }
