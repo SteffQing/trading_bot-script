@@ -29,7 +29,7 @@ async function run(params: AssetParams, loop: number) {
       throw Error("Loop must be greater than 1");
     }
 
-    connectDB();
+    await connectDB();
 
     const loopCount = loop * loop;
 
@@ -122,7 +122,7 @@ async function run(params: AssetParams, loop: number) {
 
     log(err, undefined, true);
   } finally {
-    closeDB();
+    await closeDB();
   }
 }
 
@@ -154,12 +154,12 @@ async function getMax(
 
 const assetParams = {
   [WETH.symbol!]: {
-    min: 0.01,
-    max: 0.02,
+    min: 0.1,
+    max: 0.2,
   },
   [USDC.symbol!]: {
-    min: 0.1,
-    max: 0.5,
+    min: 1,
+    max: 4,
   },
 };
 

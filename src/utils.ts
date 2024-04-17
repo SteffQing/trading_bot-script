@@ -75,4 +75,16 @@ async function getBalance(
   return balance;
 }
 
-export { getApproval, getNonce, createClient, getGas, getBalance, getGasPrice };
+function getUnixTime() {
+  return Math.floor(new Date().getTime() / 1000);
+}
+
+export {
+  getApproval,
+  getNonce,
+  createClient,
+  getGas,
+  getBalance,
+  getGasPrice,
+  getUnixTime,
+};

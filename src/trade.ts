@@ -9,7 +9,7 @@ import {
 import { WalletClient, parseUnits } from "viem";
 import { config } from "dotenv";
 import { publicClient, BASES, CHAIN_ID, router } from "./const";
-import { getNonce } from "./utils";
+import { getNonce, getUnixTime } from "./utils";
 import log from "./fs";
 import { insertDB, txn_sql } from "./database";
 
@@ -168,8 +168,10 @@ async function trade(walletClient: WalletClient, route: Route) {
       outputToken.symbol,
       amountIn.toExact(),
       bestTrade.outputAmount.toExact(),
-      new Date().toISOString().slice(0, 19).replace("T", " "),
+      getUnixTime(),
     ];
+
+    console.log(txn_data);
 
     insertDB(txn_sql, txn_data);
 

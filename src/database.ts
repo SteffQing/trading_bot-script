@@ -13,20 +13,28 @@ const database = mysql.createConnection({
 });
 
 function connectDB() {
-  database.connect((err) => {
-    if (err) {
-      throw new Error("Error connecting to Db" + err);
-    }
-    console.log("Connection established");
+  return new Promise((resolve, reject) => {
+    database.connect((err) => {
+      if (err) {
+        reject(new Error("Error connecting to Db" + err));
+      } else {
+        console.log("Connection established");
+        resolve("Connection established");
+      }
+    });
   });
 }
 
 function closeDB() {
-  database.end((err) => {
-    if (err) {
-      throw new Error("Error closing Db" + err);
-    }
-    console.log("Connection closed");
+  return new Promise((resolve, reject) => {
+    database.end((err) => {
+      if (err) {
+        reject(new Error("Error closing Db" + err));
+      } else {
+        console.log("Connection closed");
+        resolve("Connection closed");
+      }
+    });
   });
 }
 
@@ -46,4 +54,4 @@ var traders_sql =
 var txn_sql =
   "INSERT INTO transactions (tx_hash, wallet_address, swap_from_token, swap_to_token, amount_from, amount_to, time) VALUES (?,?,?,?,?,?,?)";
 
-export { connectDB, closeDB, insertDB, traders_sql, txn_sql };
+export { connectDB, closeDB, insertDB, traders_sql, txn_sql, database };
