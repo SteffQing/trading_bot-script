@@ -1,14 +1,13 @@
 import { Account, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { avalanche } from "viem/chains";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { BASES, publicClient } from "./const";
+import { BASES, publicClient, chain } from "./const";
 
 function createClient(privateKey: `0x${string}`) {
   const newAccount = privateKeyToAccount(privateKey);
   return createWalletClient({
     account: newAccount,
-    chain: avalanche,
+    chain: chain,
     transport: http(),
   });
 }
