@@ -1,5 +1,5 @@
 import { WalletClient, formatUnits } from "viem";
-import { BASES } from "./const";
+import { BASES, assetParams } from "./const";
 import { trade, getRoute } from "./trade";
 import { createClient, getBalance } from "./utils";
 import { defund_account } from "./wallets";
@@ -56,6 +56,14 @@ async function run(params: AssetParams) {
         ];
 
         const newMax = await getMax(currentAddress, inputToken, max);
+        console.log("actual max", max, "new max", newMax);
+        if (newMax <= 0.01 || newMax < min) {
+          log(
+            "newMax is less than or equal to 0.01 or min, breaking out of the inner loop"
+          );
+          continue;
+        }
+
         let amount = getRandomNumber(min, newMax).toFixed(2).toString();
 
         let routeParams = {
@@ -116,17 +124,6 @@ async function getMax(
       : balance
     : max;
 }
-
-const assetParams = {
-  [WETH.symbol!]: {
-    min: 0.1,
-    max: 0.2,
-  },
-  [USDC.symbol!]: {
-    min: 1,
-    max: 4,
-  },
-};
 
 run(assetParams).catch((error) => {
   console.error("bot error", error);

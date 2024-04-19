@@ -1,5 +1,5 @@
 import { WalletClient, formatUnits } from "viem";
-import { BASES } from "./const";
+import { BASES, assetParams } from "./const";
 import { createClient } from "./utils";
 import {
   gen_key,
@@ -37,8 +37,13 @@ async function run(params: AssetParams, loop: number = 15) {
 
       let address = client.account.address;
 
-      let trader_data = [privateKey, address];
-      insertDB(traders_sql, trader_data);
+      try {
+        let trader_data = [privateKey, address];
+        await insertDB(traders_sql, trader_data);
+      } catch (error) {
+        console.error("Couldn't add data to db");
+        continue;
+      }
 
       await fund_account({
         tokenAddress: USDC.address as `0x${string}`,
@@ -65,11 +70,7 @@ async function run(params: AssetParams, loop: number = 15) {
 
       log("Accounts defunded");
     } catch (e: any) {
-      log(
-        `Error in defund accounts: ${e.toString().replace(/\n/g, "\r\n")}`,
-        undefined,
-        true
-      );
+      log(`Error in defund accounts: ${PRIVATE_KEYS}`, undefined, true);
     }
 
     log(err, undefined, true);
@@ -77,17 +78,6 @@ async function run(params: AssetParams, loop: number = 15) {
     await closeDB();
   }
 }
-
-const assetParams = {
-  [WETH.symbol!]: {
-    min: 0.1,
-    max: 0.2,
-  },
-  [USDC.symbol!]: {
-    min: 0.1,
-    max: 0.4,
-  },
-};
 
 run(assetParams).catch((error) => {
   console.error("init error", error);

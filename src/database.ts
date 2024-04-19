@@ -42,7 +42,8 @@ function insertDB(sql: string, values: any[]) {
   return new Promise((resolve, reject) => {
     database.query(sql, values, (err, result) => {
       if (err) {
-        throw new Error("Error inserting into DB" + err);
+        // throw new Error("Error inserting into DB" + err);
+        console.error("Error inserting into DB");
       }
       resolve(result);
     });

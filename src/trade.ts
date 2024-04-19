@@ -6,7 +6,12 @@ import {
   TradeOptions,
   jsonAbis,
 } from "@traderjoe-xyz/sdk-v2";
-import { WalletClient, parseUnits } from "viem";
+import {
+  BaseError,
+  ContractFunctionExecutionError,
+  WalletClient,
+  parseUnits,
+} from "viem";
 import { config } from "dotenv";
 import { publicClient, BASES, CHAIN_ID, router } from "./const";
 import { getNonce, getUnixTime } from "./utils";
@@ -150,37 +155,48 @@ async function trade(walletClient: WalletClient, route: Route) {
     // Step 9
     let nonce = await getNonce(account.address);
 
-    const { request } = await publicClient.simulateContract({
-      address: router,
-      abi: LBRouterV21ABI,
-      functionName: methodName,
-      args: args,
-      account,
-      value: BigInt(value),
-      nonce,
-    });
-    const hash = await walletClient.writeContract(request);
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: router,
+        abi: LBRouterV21ABI,
+        functionName: methodName,
+        args: args,
+        account,
+        value: BigInt(value),
+        nonce,
+      });
+      const hash = await walletClient.writeContract(request);
 
-    let txn_data = [
-      hash,
-      account.address,
-      amountIn.token.symbol,
-      outputToken.symbol,
-      amountIn.toExact(),
-      bestTrade.outputAmount.toExact(),
-      getUnixTime(),
-    ];
+      let txn_data = [
+        hash,
+        account.address,
+        amountIn.token.symbol,
+        outputToken.symbol,
+        amountIn.toExact(),
+        bestTrade.outputAmount.toExact(),
+        getUnixTime(),
+      ];
 
-    console.log(txn_data);
+      await insertDB(txn_sql, txn_data);
 
-    insertDB(txn_sql, txn_data);
+      log(`Transaction sent with hash ${hash} \n\n`);
 
-    log(`Transaction sent with hash ${hash} \n\n`);
-
-    await publicClient.waitForTransactionReceipt({
-      hash,
-    });
-    return hash;
+      await publicClient.waitForTransactionReceipt({
+        hash,
+      });
+    } catch (err) {
+      if (err instanceof BaseError) {
+        const revertError = err.walk(
+          (err) => err instanceof ContractFunctionExecutionError
+        );
+        if (revertError instanceof ContractFunctionExecutionError) {
+          const cause = revertError.cause.details;
+          const message = revertError.message;
+          const errorMessage = `ContractFunctionExecutionError: ${message} \nCause: ${cause}`;
+          log(errorMessage, "trade_error.txt", true);
+        }
+      }
+    }
   } catch (error) {
     log(`${error} \n\n`);
 

@@ -53,6 +53,18 @@ const mainWalletClient = createWalletClient({
   chain: chain,
   transport: http(),
 });
+
+const assetParams = {
+  [WETH.symbol!]: {
+    min: 0.1,
+    max: 0.2,
+  },
+  [USDC.symbol!]: {
+    min: 0.1,
+    max: 0.4,
+  },
+};
+
 export {
   BASES,
   publicClient,
@@ -61,4 +73,5 @@ export {
   account,
   router,
   chain,
+  assetParams,
 };
