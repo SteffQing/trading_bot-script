@@ -1,8 +1,4 @@
-import { BASES } from "./const";
-import { createClient } from "./utils";
-import { defund_account } from "./wallets";
 import { closeDB, connectDB, database } from "./database";
-import log from "./fs";
 
 function createRecord() {
   const sql = "DELETE FROM transactions WHERE amount_from = 0";

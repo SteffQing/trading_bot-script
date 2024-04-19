@@ -2,15 +2,11 @@ import { WalletClient, formatUnits } from "viem";
 import { BASES } from "./const";
 import { trade, getRoute } from "./trade";
 import { createClient, getBalance } from "./utils";
-import {
-  gen_key,
-  fund_account,
-  defund_account,
-  approve_router,
-} from "./wallets";
+import { defund_account } from "./wallets";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
-import { connectDB, closeDB, insertDB, traders_sql } from "./database";
+import { connectDB, closeDB } from "./database";
+import { readFileSync } from "fs";
 
 const [WETH, USDC] = BASES;
 
@@ -21,53 +17,27 @@ interface AssetParams {
   };
 }
 
-async function run(params: AssetParams, loop: number) {
+async function run(params: AssetParams) {
   const CLIENTS: WalletClient[] = [];
-  const PRIVATE_KEYS: string[] = [];
+  var PRIVATE_KEYS: `0x${string}`[] = [];
   try {
-    if (loop <= 1) {
-      throw Error("Loop must be greater than 1");
-    }
-
     await connectDB();
-
-    const loopCount = loop * loop;
 
     const InToken: { [key: `0x${string}`]: number } = {};
 
-    for (let i = 0; i < loopCount; i++) {
-      if (CLIENTS.length === loop) {
-        const oldClient = CLIENTS.shift();
-        await defund_account(USDC.address as `0x${string}`, oldClient!);
-        PRIVATE_KEYS.shift();
-        log("Client defunded");
-      }
-      // Generate new key and client, fund and add to array
-      let privateKey = gen_key();
-      PRIVATE_KEYS.push(privateKey);
+    const data = readFileSync("./data/wallets.js", "utf8");
+    PRIVATE_KEYS = JSON.parse(data);
 
-      const client = createClient(privateKey);
+    PRIVATE_KEYS.forEach((key) => {
+      const client = createClient(key);
       CLIENTS.push(client);
-
       let address = client.account.address;
-
-      let trader_data = [privateKey, address];
-      insertDB(traders_sql, trader_data);
-
-      await fund_account({
-        tokenAddress: USDC.address as `0x${string}`,
-        decimals: USDC.decimals,
-        eth_amount: params[WETH.symbol!].max.toString(),
-        token_amount: params[USDC.symbol!].max.toString(),
-        recipientAddress: address,
-      });
-
-      await approve_router(USDC.address as `0x${string}`, client);
-
-      // Get random number between 0 and 1 for index to determine inputToken
       let index = getRandomIndex();
       InToken[address] = index;
+    });
 
+    for (let i = 0; i < 10; i++) {
+      log(`Starting trade ${i + 1}`, "dummy.txt");
       for (let j = 0; j < CLIENTS.length; j++) {
         // Actually call trades on each client
 
@@ -99,12 +69,7 @@ async function run(params: AssetParams, loop: number) {
         await trade(currentClient, route);
       }
     }
-
-    for (let k = 0; k < CLIENTS.length; k++) {
-      await defund_account(USDC.address as `0x${string}`, CLIENTS[k]);
-    }
-
-    log("Script completed successfully!");
+    log("Bot Script completed successfully!");
   } catch (err) {
     try {
       for (let i = 0; i < CLIENTS.length; i++) {
@@ -163,7 +128,7 @@ const assetParams = {
   },
 };
 
-run(assetParams, 2).catch((error) => {
-  console.error("main error", error);
+run(assetParams).catch((error) => {
+  console.error("bot error", error);
   process.exit(1);
 });
