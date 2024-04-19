@@ -14,7 +14,7 @@ import log from "./fs";
 function gen_key() {
   const privateKey = generatePrivateKey();
 
-  log(privateKey, './wallets.txt')
+  log(privateKey, "./wallets.txt");
   return privateKey;
 }
 
@@ -60,7 +60,7 @@ async function fund_account(params: AccountFunding) {
     });
     return { hash1, hash2, method: "fund_account" };
   } catch (error) {
-    log("funding account error: " + error);
+    log("funding account error: " + error, "log.txt", true);
   }
 }
 
@@ -109,7 +109,7 @@ async function defund_account(
     }
     return { method: "defund_account" };
   } catch (error) {
-    log(error)
+    log(error);
     throw new Error("defund_account error: " + error);
   }
 }
@@ -137,7 +137,7 @@ async function approve_router(
 
     return { method: "approve_router", hash };
   } catch (error) {
-    log("approve_router Error: " + error);
+    log("approve_router Error: " + error, "log.txt", true);
   }
 }
 

@@ -23,6 +23,7 @@ interface AssetParams {
 async function run(params: AssetParams, loop: number = 15) {
   const CLIENTS: WalletClient[] = [];
   const PRIVATE_KEYS: string[] = [];
+
   try {
     await connectDB();
 
@@ -83,8 +84,8 @@ const assetParams = {
     max: 0.2,
   },
   [USDC.symbol!]: {
-    min: 1,
-    max: 4,
+    min: 0.1,
+    max: 0.4,
   },
 };
 

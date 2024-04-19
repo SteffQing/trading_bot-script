@@ -16,7 +16,7 @@ function connectDB() {
   return new Promise((resolve, reject) => {
     database.connect((err) => {
       if (err) {
-        reject(new Error("Error connecting to Db" + err));
+        throw new Error("Error connecting to Db" + err);
       } else {
         console.log("Connection established");
         resolve("Connection established");
@@ -29,7 +29,7 @@ function closeDB() {
   return new Promise((resolve, reject) => {
     database.end((err) => {
       if (err) {
-        reject(new Error("Error closing Db" + err));
+        throw new Error("Error closing Db" + err);
       } else {
         console.log("Connection closed");
         resolve("Connection closed");
