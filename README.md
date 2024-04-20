@@ -12,24 +12,55 @@ The bot will buy the asset and sell it at the market price. The bot will also ch
 In the case of an error, all trading wallets aree defunded and the bot will stop trading. If in the course of defunding, there is an error, the script creates an error log file with that set time/date in UNIX format, detailing the cause of the error and indicating the private keys yet to be defunded for manual action.
 
 ## Getting Started
-the bot is written in TypeScript and needs to be compiled down to JavaScript to run it
+As a prerequisite, you need to have the following installed on your machine:
+- Node.js
+- npm
+
+
+### Installation
+To install the dependencies, run the following command in the root directory of the project:
+```bash
+npm install
+```
+
+### Overview
+The bot is written in TypeScript and needs to be compiled down to JavaScript to run it
 
 
 the source files are in the src folder and the compiled files are in the dst folder
 
 
-to compile and run the file you need to run the following commands
-`npm run start`
-This command compiles down the src files to the dst folder and runs the index.js file in the dst folder
+The const values in the const.ts file are the parameters that need to be set for the bot to run. The parameters are as follows:
 
-
-The src/index.ts file contains the entry point of the bot. 
-
-
-The const variables in the index.ts file are the parameters that need to be set for the bot to run. The parameters are as follows:
-
-- `AssetParams` which is an object with two keys. `WETH` and `TOKEN/USDC`
+- `assetParams` which is an object with two keys. `WETH` and `TOKEN/USDC`
     - `WETH/TOKEN` which is an object with the following keys:
-        - `min` minimum amount of the asset to be traded
-        - `max` maximum amount of the asset to be traded and initially funded
-- `loop` which is the number of times the bot will run before stopping
+        - `min` minimum amount of the asset to be traded. `min` must be greater than or equal to 0.01
+        - `max` maximum amount of the asset to be traded and initially funded. `max` must be greater than `min`
+- `wallets_count` this variable is the number of wallets to be generated for trading
+
+
+No other variable in the const.ts file needs to be changed for the bot to run properly
+
+## Running the script
+Now, there are 3 main commands and files in the project that you need to be aware of:
+- `init.ts` is the opening file to starting the bot. It handles the generation, funding, router approval and storage of the wallet addresses or traders. It is required that this file is run before the bot can be run:
+  - To run the file, use the following command:
+    ```bash
+    npm run init
+    ```
+- `bot.ts` is the file that starts the bot. It handles the trading of the asset in a 10 count loop. It is required that the `init.ts` file is run before this file can be run:
+  - To run the file, use the following command:
+    ```bash
+    npm run bot
+    ```
+- `stop.ts` is the file that stops the bot. It handles the defunding of the wallets:
+  - To run the file, use the following command:
+    ```bash
+    npm run stop
+    ```
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+
+# Trading Bot Script

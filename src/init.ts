@@ -1,5 +1,5 @@
-import { WalletClient, formatUnits } from "viem";
-import { BASES, assetParams } from "./const";
+import { WalletClient } from "viem";
+import { BASES, assetParams, wallets_count } from "./const";
 import { createClient } from "./utils";
 import {
   gen_key,
@@ -13,21 +13,14 @@ import { writeFileSync } from "fs";
 
 const [WETH, USDC] = BASES;
 
-interface AssetParams {
-  [symbol: string]: {
-    min: number;
-    max: number;
-  };
-}
-
-async function run(params: AssetParams, loop: number = 15) {
+async function run() {
   const CLIENTS: WalletClient[] = [];
   const PRIVATE_KEYS: string[] = [];
 
   try {
     await connectDB();
 
-    for (let i = 0; i < loop; i++) {
+    for (let i = 0; i < wallets_count; i++) {
       // Generate new key and client, fund and add to array
       let privateKey = gen_key();
       PRIVATE_KEYS.push(privateKey);
@@ -48,8 +41,8 @@ async function run(params: AssetParams, loop: number = 15) {
       await fund_account({
         tokenAddress: USDC.address as `0x${string}`,
         decimals: USDC.decimals,
-        eth_amount: params[WETH.symbol!].max.toString(),
-        token_amount: params[USDC.symbol!].max.toString(),
+        eth_amount: assetParams[WETH.symbol!].max.toString(),
+        token_amount: assetParams[USDC.symbol!].max.toString(),
         recipientAddress: address,
       });
 
@@ -79,7 +72,7 @@ async function run(params: AssetParams, loop: number = 15) {
   }
 }
 
-run(assetParams).catch((error) => {
+run().catch((error) => {
   console.error("init error", error);
   process.exit(1);
 });

@@ -10,14 +10,7 @@ import { readFileSync } from "fs";
 
 const [WETH, USDC] = BASES;
 
-interface AssetParams {
-  [symbol: string]: {
-    min: number;
-    max: number;
-  };
-}
-
-async function run(params: AssetParams) {
+async function run() {
   const CLIENTS: WalletClient[] = [];
   var PRIVATE_KEYS: `0x${string}`[] = [];
   try {
@@ -51,8 +44,8 @@ async function run(params: AssetParams) {
         let [isNativeIn, isNativeOut] = [tokenIndex === 0, tokenIndex === 1];
 
         const [min, max] = [
-          params[inputToken.symbol!].min,
-          params[inputToken.symbol!].max,
+          assetParams[inputToken.symbol!].min,
+          assetParams[inputToken.symbol!].max,
         ];
 
         const newMax = await getMax(currentAddress, inputToken, max);
@@ -125,7 +118,7 @@ async function getMax(
     : max;
 }
 
-run(assetParams).catch((error) => {
+run().catch((error) => {
   console.error("bot error", error);
   process.exit(1);
 });

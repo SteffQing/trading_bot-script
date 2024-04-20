@@ -6,7 +6,7 @@
   "scripts": {
     "bot": "npx tsc && node dst/bot.js",
     "init": "npx tsc && node dst/init.js",
-    "close": "npx tsc && node dst/close.js",
+    "stop": "npx tsc && node dst/stop.js",
     "test": "npx tsc && node dst/test.js",
     "prettier": "prettier --write '**/*.{js,ts,json,md}'"
   },
