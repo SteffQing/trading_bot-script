@@ -1,7 +1,8 @@
 import { Account, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
-import { BASES, publicClient, chain } from "./const";
+import { BASES, publicClient, chain, assetParams } from "./const";
+import { existsSync } from "fs";
 
 function createClient(privateKey: `0x${string}`) {
   const newAccount = privateKeyToAccount(privateKey);
@@ -79,6 +80,21 @@ function getUnixTime() {
   return Math.floor(new Date().getTime() / 1000);
 }
 
+function validateInputs() {
+  for (const symbol in assetParams) {
+    const { min, max } = assetParams[symbol];
+    if (min < 0.01 || max <= min) {
+      throw new Error("Invalid min or max values");
+    }
+  }
+}
+
+function validateWalletsFile() {
+  if (!existsSync("./data/wallets.js")) {
+    throw new Error("Wallets file not found");
+  }
+}
+
 export {
   getApproval,
   getNonce,
@@ -87,4 +103,6 @@ export {
   getBalance,
   getGasPrice,
   getUnixTime,
+  validateInputs,
+  validateWalletsFile,
 };

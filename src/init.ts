@@ -1,6 +1,6 @@
 import { WalletClient } from "viem";
 import { BASES, assetParams, wallets_count } from "./const";
-import { createClient } from "./utils";
+import { createClient, validateInputs } from "./utils";
 import {
   gen_key,
   fund_account,
@@ -16,7 +16,7 @@ const [WETH, USDC] = BASES;
 async function run() {
   const CLIENTS: WalletClient[] = [];
   const PRIVATE_KEYS: string[] = [];
-
+  validateInputs();
   try {
     await connectDB();
 

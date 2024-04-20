@@ -1,7 +1,12 @@
 import { WalletClient, formatUnits } from "viem";
 import { BASES, assetParams } from "./const";
 import { trade, getRoute } from "./trade";
-import { createClient, getBalance } from "./utils";
+import {
+  createClient,
+  getBalance,
+  validateInputs,
+  validateWalletsFile,
+} from "./utils";
 import { defund_account } from "./wallets";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
@@ -13,6 +18,8 @@ const [WETH, USDC] = BASES;
 async function run() {
   const CLIENTS: WalletClient[] = [];
   var PRIVATE_KEYS: `0x${string}`[] = [];
+  validateInputs();
+  validateWalletsFile();
   try {
     await connectDB();
 
@@ -50,7 +57,7 @@ async function run() {
 
         const newMax = await getMax(currentAddress, inputToken, max);
         console.log("actual max", max, "new max", newMax);
-        if (newMax <= 0.01 || newMax < min) {
+        if (newMax < min) {
           log(
             "newMax is less than or equal to 0.01 or min, breaking out of the inner loop"
           );

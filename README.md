@@ -58,6 +58,11 @@ Now, there are 3 main commands and files in the project that you need to be awar
     ```bash
     npm run stop
     ```
+- `start` A command that runs all 3 commands in a sequence:
+  - To run the file, use the following command:
+    ```bash
+    npm run start
+    ```
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
