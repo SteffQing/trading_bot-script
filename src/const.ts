@@ -57,12 +57,12 @@ const mainWalletClient = createWalletClient({
 // Please update these values only
 const assetParams = {
   [WETH.symbol!]: {
-    min: 0.03,
-    max: 0.15,
+    min: 0.02,
+    max: 0.1,
   },
   [USDC.symbol!]: {
-    min: 1,
-    max: 5,
+    min: 0.3,
+    max: 2,
   },
 };
 const wallets_count = 4;
