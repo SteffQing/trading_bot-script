@@ -120,7 +120,7 @@ async function getMax(
 
   return max >= balance
     ? inputToken.symbol === WETH.symbol!
-      ? balance - balance * 0.1
+      ? balance - 0.01
       : balance
     : max;
 }

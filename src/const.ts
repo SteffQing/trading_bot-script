@@ -57,15 +57,15 @@ const mainWalletClient = createWalletClient({
 // Please update these values only
 const assetParams = {
   [WETH.symbol!]: {
-    min: 0.1,
-    max: 0.2,
+    min: 0.03,
+    max: 0.15,
   },
   [USDC.symbol!]: {
-    min: 0.1,
-    max: 0.4,
+    min: 1,
+    max: 5,
   },
 };
-const wallets_count = 15
+const wallets_count = 4;
 
 export {
   BASES,
@@ -76,5 +76,5 @@ export {
   router,
   chain,
   assetParams,
-  wallets_count
+  wallets_count,
 };
