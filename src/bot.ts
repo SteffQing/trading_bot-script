@@ -57,7 +57,7 @@ async function run() {
 
         const newMax = await getMax(currentAddress, inputToken, max);
         console.log("actual max", max, "new max", newMax);
-        if (newMax < min) {
+        if (newMax < min || newMax < 0.01) {
           log(
             "newMax is less than or equal to 0.01 or min, breaking out of the inner loop"
           );
