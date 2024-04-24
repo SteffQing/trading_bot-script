@@ -3,12 +3,13 @@ import { createClient } from "./utils";
 import { defund_account } from "./wallets";
 
 // async function test_defund() {
-//   const KEYS = []
+//   const KEYS = [
+//   ];
 
 //   for (let index = 0; index < KEYS.length; index++) {
 //     const element = KEYS[index] as `0x${string}`;
 //     const client = createClient(element);
-//     await defund_account("0xB6076C93701D6a07266c31066B298AeC6dd65c2d", client);
+//     await defund_account("0x95430905F4B0dA123d41BA96600427d2C92B188a", client);
 //   }
 // }
 
@@ -26,6 +27,6 @@ function createRecord() {
   });
 }
 
-connectDB();
-createRecord();
-closeDB();
+// connectDB();
+// createRecord();
+// closeDB();
