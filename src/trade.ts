@@ -193,7 +193,7 @@ async function trade(walletClient: WalletClient, route: Route) {
           const cause = revertError.cause.details;
           const message = revertError.message;
           const errorMessage = `ContractFunctionExecutionError: ${message} \nCause: ${cause}`;
-          log(errorMessage, "trade_error.txt", true);
+          log(errorMessage, "trade_error.txt", false);
         }
       }
     }

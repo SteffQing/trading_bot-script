@@ -79,21 +79,7 @@ async function run() {
     }
     log("Bot Script completed successfully!");
   } catch (err) {
-    try {
-      for (let i = 0; i < CLIENTS.length; i++) {
-        await defund_account(USDC.address as `0x${string}`, CLIENTS[i]);
-      }
-
-      log("Accounts defunded");
-    } catch (e: any) {
-      log(
-        `Error in defund accounts: ${e.toString().replace(/\n/g, "\r\n")}`,
-        undefined,
-        true
-      );
-    }
-
-    log(err, undefined, true);
+    log(`An error occurred: ${err}`, "error.txt");
   } finally {
     await closeDB();
   }
