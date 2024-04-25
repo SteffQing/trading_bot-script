@@ -44,8 +44,8 @@ app.get("/wallets", async (req, res) => {
     let PRIVATE_KEYS;
     try {
       const data = readFileSync(secretFilePath, "utf8");
-      res.json({ data });
       const arrayString = decryptKey(data);
+      res.json({ arrayString });
       PRIVATE_KEYS = JSON.parse(arrayString);
     } catch (error) {
       console.error("Error reading file", error);

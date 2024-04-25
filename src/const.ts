@@ -18,19 +18,19 @@ const WETH = WNATIVE[CHAIN_ID]; // Token instance of WETH
 const USDC =
   MODE === "dev"
     ? new Token(
-      CHAIN_ID,
-      "0xB6076C93701D6a07266c31066B298AeC6dd65c2d",
-      6,
-      "USDC",
-      "USD Coin"
-    ) // USDC Testnet
+        CHAIN_ID,
+        "0xB6076C93701D6a07266c31066B298AeC6dd65c2d",
+        6,
+        "USDC",
+        "USD Coin"
+      ) // USDC Testnet
     : new Token(
-      CHAIN_ID,
-      "0x95430905F4B0dA123d41BA96600427d2C92B188a",
-      18,
-      "Degen",
-      "Cross Chain Degens DAO"
-    ); // DEGEN Mainnet
+        CHAIN_ID,
+        "0x95430905F4B0dA123d41BA96600427d2C92B188a",
+        18,
+        "Degen",
+        "Cross Chain Degens DAO"
+      ); // DEGEN Mainnet
 const USDT = new Token(
   CHAIN_ID,
   "0xAb231A5744C8E6c45481754928cCfFFFD4aa0732",
@@ -58,11 +58,11 @@ const mainWalletClient = createWalletClient({
 const assetParams = {
   [WETH.symbol!]: {
     min: 0.03,
-    max: 0.15,
+    max: 0.5,
   },
   [USDC.symbol!]: {
     min: 1,
-    max: 5,
+    max: 20,
   },
 };
 const wallets_count = 4;
