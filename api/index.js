@@ -8,6 +8,7 @@ const { formatEther } = require("viem");
 const { privateKeyToAddress } = require("viem/accounts");
 const { readFileSync } = require("fs");
 const { getBalance, decryptKey } = require("../dst/utils");
+const path = require("path");
 
 dotenv.config();
 
@@ -38,7 +39,10 @@ async function getWalletBalance(address) {
 
 app.get("/wallets", async (req, res) => {
   try {
-    const data = readFileSync("./secret/trading_keys.txt", "utf8");
+    const rootDir = path.resolve(__dirname, "../");
+    const secretFilePath = path.join(rootDir, "secret", "trading_keys.txt");
+
+    const data = readFileSync(secretFilePath, "utf8");
     const PRIVATE_KEYS = JSON.parse(decryptKey(data));
     let main_account = privateKeyToAddress(`0x${PRIVATE_KEY}`);
     let accounts = PRIVATE_KEYS.map((key) => privateKeyToAddress(key));
