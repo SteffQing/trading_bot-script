@@ -123,17 +123,7 @@ async function trade(walletClient: WalletClient, route: Route) {
       throw new Error("No valid trade found");
     }
 
-    /* Step 7 */
-    // print useful information about the trade, such as the quote, executionPrice, fees, etc
-    // console.log("bestTrade", bestTrade.toLog());
-
-    // get trade fee information
-    const { totalFeePct, feeAmountIn } = await bestTrade.getTradeFee();
-
-    log(`Total fees percentage, ${totalFeePct.toSignificant(6)}`);
-    log(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`);
-
-    // Step 8
+    // Step 7
     // set slippage tolerance
     const userSlippageTolerance = new Percent("50", "10000"); // 0.5%
 
@@ -152,7 +142,7 @@ async function trade(walletClient: WalletClient, route: Route) {
       value, // e.g. 0x0
     } = bestTrade.swapCallParameters(swapOptions);
 
-    // Step 9
+    // Step 8
     let nonce = await getNonce(account.address);
 
     try {
@@ -177,9 +167,11 @@ async function trade(walletClient: WalletClient, route: Route) {
         getUnixTime(),
       ];
 
-      await insertDB(txn_sql, txn_data);
+      log(
+        `${trim(account.address)} Swap ${amountIn.toExact()} ${amountIn.token.symbol} for ${bestTrade.outputAmount.toExact()} ${outputToken.symbol} \nTransaction sent with hash ${hash} \n\n`
+      );
 
-      log(`Transaction sent with hash ${hash} \n\n`);
+      await insertDB(txn_sql, txn_data);
 
       await publicClient.waitForTransactionReceipt({
         hash,
@@ -202,6 +194,12 @@ async function trade(walletClient: WalletClient, route: Route) {
 
     throw new Error("Error executing trade");
   }
+}
+function trim(address: string, startLength = 7, endLength = 5) {
+  const truncatedStart = address.slice(0, startLength);
+  const truncatedEnd = address.slice(-endLength);
+
+  return truncatedStart + "..." + truncatedEnd;
 }
 
 export { trade, getRoute };

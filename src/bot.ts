@@ -7,7 +7,7 @@ import {
   validateInputs,
   validateWalletsFile,
 } from "./utils";
-import { defund_account } from "./wallets";
+import { defund_account, fund_account } from "./wallets";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
 import { connectDB, closeDB } from "./database";
@@ -24,6 +24,7 @@ async function run() {
     await connectDB();
 
     const InToken: { [key: `0x${string}`]: number } = {};
+    const MaxedOut: { [key: string]: Set<string> } = {};
 
     const data = readFileSync("./data/wallets.js", "utf8");
     PRIVATE_KEYS = JSON.parse(data);
@@ -34,13 +35,11 @@ async function run() {
       let address = client.account.address;
       let index = getRandomIndex();
       InToken[address] = index;
+      MaxedOut[address] = new Set<string>();
     });
 
     for (let i = 0; i < 10; i++) {
-      log(`Starting trade ${i + 1}`, "dummy.txt");
       for (let j = 0; j < CLIENTS.length; j++) {
-        // Actually call trades on each client
-
         let currentClient = CLIENTS[j];
         let currentAddress = currentClient.account?.address as `0x${string}`;
 
@@ -56,11 +55,18 @@ async function run() {
         ];
 
         const newMax = await getMax(currentAddress, inputToken, max);
-        console.log("actual max", max, "new max", newMax);
-        if (newMax < min || newMax < 0.01) {
-          log(
-            "newMax is less than or equal to 0.01 or min, breaking out of the inner loop"
-          );
+
+        if (newMax <= 0.01) {
+          MaxedOut[currentAddress].add(inputToken.symbol!);
+          if (MaxedOut[currentAddress].size === 2) {
+            await fund_account({
+              tokenAddress: USDC.address as `0x${string}`,
+              decimals: USDC.decimals,
+              eth_amount: assetParams[WETH.symbol!].max.toString(),
+              token_amount: assetParams[USDC.symbol!].max.toString(),
+              recipientAddress: currentAddress,
+            });
+          }
           continue;
         }
 
@@ -86,7 +92,8 @@ async function run() {
 }
 
 function getRandomNumber(min: number, max: number) {
-  return Math.random() * (max - min) + min;
+  let newMin = min > max ? 0.01 : min;
+  return Math.random() * (max - newMin) + newMin;
 }
 function getRandomIndex() {
   return Math.floor(Math.random() * 2);
