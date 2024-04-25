@@ -7,7 +7,7 @@ import {
   validateInputs,
   validateWalletsFile,
 } from "./utils";
-import { defund_account, fund_account } from "./wallets";
+import { fund_account } from "./wallets";
 import { Token } from "@traderjoe-xyz/sdk-core";
 import log from "./fs";
 import { connectDB, closeDB } from "./database";
@@ -66,6 +66,7 @@ async function run() {
               token_amount: assetParams[USDC.symbol!].max.toString(),
               recipientAddress: currentAddress,
             });
+            MaxedOut[currentAddress].clear();
           }
           continue;
         }
