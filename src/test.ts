@@ -21,10 +21,11 @@ async function test_create() {
   writeFileSync("./secret/wallets.txt", ciipherkey);
 }
 
-test_create();
+// test_create();
 
 function createRecord() {
-  const sql = "DELETE FROM transactions WHERE swap_to_token = 'USDC'";
+  const sql =
+    "DELETE FROM transactions WHERE swap_to_token = 'USDC' OR swap_from_token = 'USDC'";
   database.query(sql, (err: any, result: any) => {
     if (err) {
       console.error("Error creating record:", err);

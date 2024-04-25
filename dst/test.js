@@ -28,9 +28,9 @@ function test_create() {
         (0, fs_1.writeFileSync)("./secret/wallets.txt", ciipherkey);
     });
 }
-test_create();
+// test_create();
 function createRecord() {
-    const sql = "DELETE FROM transactions WHERE swap_to_token = 'USDC'";
+    const sql = "DELETE FROM transactions WHERE swap_to_token = 'USDC' OR swap_from_token = 'USDC'";
     database_1.database.query(sql, (err, result) => {
         if (err) {
             console.error("Error creating record:", err);
@@ -40,6 +40,6 @@ function createRecord() {
         console.log(JSON.stringify(result, null, 2));
     });
 }
-// connectDB();
-// createRecord();
-// closeDB();
+(0, database_1.connectDB)();
+createRecord();
+(0, database_1.closeDB)();

@@ -42,11 +42,11 @@ exports.mainWalletClient = mainWalletClient;
 const assetParams = {
     [WETH.symbol]: {
         min: 0.03,
-        max: 0.15,
+        max: 0.5,
     },
     [USDC.symbol]: {
         min: 1,
-        max: 5,
+        max: 20,
     },
 };
 exports.assetParams = assetParams;
