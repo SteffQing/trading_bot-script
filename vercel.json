@@ -4,5 +4,6 @@
       "source": "/(.*)",
       "destination": "/api"
     }
-  ]
+  ],
+  "buildCommand": "npx tsx"
 }
