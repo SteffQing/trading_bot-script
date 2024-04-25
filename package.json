@@ -9,6 +9,7 @@
     "bot": "npx tsc && node dst/bot.js",
     "stop": "npx tsc && node dst/stop.js",
     "test": "npx tsc && node dst/test.js",
+    "serve": "node api/index.js",
     "prettier": "prettier --write '**/*.{js,ts,json,md}'"
   },
   "keywords": [],

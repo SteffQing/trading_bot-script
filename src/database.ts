@@ -38,6 +38,19 @@ function closeDB() {
   });
 }
 
+var sql = "SELECT * FROM transactions";
+function fetchDB() {
+  return new Promise((resolve, reject) => {
+    database.query(sql, (err, result) => {
+      if (err) {
+        throw new Error("Error fetching from DB" + err);
+      }
+      resolve(result);
+      return result;
+    });
+  });
+}
+
 function insertDB(sql: string, values: any[]) {
   return new Promise((resolve, reject) => {
     database.query(sql, values, (err, result) => {
@@ -55,4 +68,12 @@ var traders_sql =
 var txn_sql =
   "INSERT INTO transactions (tx_hash, wallet_address, swap_from_token, swap_to_token, amount_from, amount_to, time) VALUES (?,?,?,?,?,?,?)";
 
-export { connectDB, closeDB, insertDB, traders_sql, txn_sql, database };
+export {
+  connectDB,
+  closeDB,
+  insertDB,
+  traders_sql,
+  txn_sql,
+  database,
+  fetchDB,
+};
