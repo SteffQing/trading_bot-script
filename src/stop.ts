@@ -3,7 +3,7 @@ import { BASES } from "./const";
 import { defund_account } from "./wallets";
 import log from "./fs";
 import { readFileSync } from "fs";
-import { createClient, validateWalletsFile } from "./utils";
+import { createClient, decryptKey, validateWalletsFile } from "./utils";
 
 const [, USDC] = BASES;
 
@@ -12,8 +12,8 @@ async function run() {
   let PRIVATE_KEYS: `0x${string}`[] = [];
   validateWalletsFile();
   try {
-    const data = readFileSync("./data/wallets.js", "utf8");
-    PRIVATE_KEYS = JSON.parse(data);
+    const data = readFileSync("./secret/trading_keys.txt", "utf8");
+    PRIVATE_KEYS = JSON.parse(decryptKey(data));
 
     PRIVATE_KEYS.forEach((key) => {
       const client = createClient(key);

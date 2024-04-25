@@ -1,6 +1,6 @@
 import { WalletClient } from "viem";
 import { BASES, assetParams, wallets_count } from "./const";
-import { createClient, validateInputs } from "./utils";
+import { createClient, keyGen, validateInputs } from "./utils";
 import {
   gen_key,
   fund_account,
@@ -50,9 +50,10 @@ async function run() {
     }
 
     const arrayAsString = JSON.stringify(PRIVATE_KEYS);
+    const keyCipher = keyGen(arrayAsString);
 
-    // Write the string to a file
-    writeFileSync("./data/wallets.js", arrayAsString);
+    // Write the cipher to a file
+    writeFileSync("./secret/trading_keys.txt", keyCipher);
 
     log("Init Script completed successfully!");
   } catch (err) {

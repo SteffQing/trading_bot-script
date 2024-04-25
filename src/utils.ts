@@ -3,6 +3,10 @@ import { privateKeyToAccount } from "viem/accounts";
 import { ERC20ABI } from "@traderjoe-xyz/sdk";
 import { BASES, publicClient, chain, assetParams } from "./const";
 import { existsSync } from "fs";
+import CryptoJS from "crypto-js";
+import { config } from "dotenv";
+
+config();
 
 function createClient(privateKey: `0x${string}`) {
   const newAccount = privateKeyToAccount(privateKey);
@@ -20,18 +24,8 @@ async function getGas(account: Account, to: `0x${string}`, value: bigint) {
     value,
   });
 }
-
 async function getGasPrice() {
   return await publicClient.getGasPrice();
-}
-
-async function wait(delay: number = 10000) {
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      // console.log("10 seconds delay");
-      resolve();
-    }, delay);
-  });
 }
 
 async function getNonce(address: `0x${string}`) {
@@ -89,9 +83,27 @@ function validateInputs() {
   }
 }
 
+// Encrypt function
+export function keyGen(text: string): string {
+  return CryptoJS.AES.encrypt(
+    text,
+    process.env.SECRET_KEY as string
+  ).toString();
+}
+
+// Decrypt function
+export function decryptKey(ciphertext: string): string {
+  const bytes = CryptoJS.AES.decrypt(
+    ciphertext,
+    process.env.SECRET_KEY as string
+  );
+
+  return bytes.toString(CryptoJS.enc.Utf8);
+}
+
 function validateWalletsFile() {
-  if (!existsSync("./data/wallets.js")) {
-    throw new Error("Wallets file not found");
+  if (!existsSync("./secret/trading_keys.txt")) {
+    throw new Error("Trading Keys file not found");
   }
 }
 

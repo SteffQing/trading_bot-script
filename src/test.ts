@@ -1,6 +1,7 @@
+import { readFileSync, writeFileSync } from "fs";
 import { closeDB, connectDB, database } from "./database";
-import { createClient } from "./utils";
-import { defund_account } from "./wallets";
+import { createClient, decryptKey, keyGen } from "./utils";
+import { defund_account, gen_key } from "./wallets";
 
 // async function test_defund() {
 //   const KEYS = [
@@ -14,6 +15,13 @@ import { defund_account } from "./wallets";
 // }
 
 // test_defund();
+
+async function test_create() {
+  let ciipherkey = keyGen(readFileSync("./secret/wallets.js", "utf8"));
+  writeFileSync("./secret/wallets.txt", ciipherkey);
+}
+
+test_create();
 
 function createRecord() {
   const sql = "DELETE FROM transactions WHERE swap_to_token = 'USDC'";

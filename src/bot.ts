@@ -3,6 +3,7 @@ import { BASES, assetParams } from "./const";
 import { trade, getRoute } from "./trade";
 import {
   createClient,
+  decryptKey,
   getBalance,
   validateInputs,
   validateWalletsFile,
@@ -26,8 +27,8 @@ async function run() {
     const InToken: { [key: `0x${string}`]: number } = {};
     const MaxedOut: { [key: string]: Set<string> } = {};
 
-    const data = readFileSync("./data/wallets.js", "utf8");
-    PRIVATE_KEYS = JSON.parse(data);
+    const data = readFileSync("./secret/trading_keys.txt", "utf8");
+    PRIVATE_KEYS = JSON.parse(decryptKey(data));
 
     PRIVATE_KEYS.forEach((key) => {
       const client = createClient(key);

@@ -20,6 +20,7 @@
     "@traderjoe-xyz/sdk-core": "^2.0.1",
     "@traderjoe-xyz/sdk-v2": "^3.0.5",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mysql": "^2.18.1",
@@ -27,6 +28,7 @@
     "viem": "^2.9.9"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/mysql": "^2.15.26",
     "@types/node": "^20.12.4",
     "nodemon": "^3.1.0",
