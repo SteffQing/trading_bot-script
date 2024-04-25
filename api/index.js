@@ -58,7 +58,7 @@ app.get("/wallets", async (req, res) => {
 
     res.json(Balances);
   } catch (error) {
-    res.status(500).json({ error: error.message, key: process.env.SECRET_KEY });
+    res.status(500).json({ error: error.message });
   }
 });
 
