@@ -53,9 +53,9 @@ app.get("/wallets", async (req, res) => {
 });
 
 // Local instance
-app.listen(5000, () => {
-  console.log("Server listening on port 5000");
-});
+// app.listen(5000, () => {
+//   console.log("Server listening on port 5000");
+// });
 
 // Vercel instance
-// module.exports = app;
+module.exports = app;
