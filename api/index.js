@@ -33,7 +33,8 @@ app.get("/api", async (req, res) => {
 async function getWalletBalance(address) {
   const etherBalance = await getBalance(address, undefined);
   const degenBalance = await getBalance(address, DEGEN);
-  const [ether, degen] = [formatEther(etherBalance), formatEther(degenBalance)];
+  let [ether, degen] = [formatEther(etherBalance), formatEther(degenBalance)];
+  [ether, degen] = [Number(ether).toFixed(2), Number(degen).toFixed(2)];
   return { ether, degen, address };
 }
 
